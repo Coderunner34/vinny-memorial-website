@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// FIXED: Use your actual image paths from src/imports
-import vinnyPortrait from '../../imports/WhatsApp_Image_2026-05-02_at_18.01.13_(1).jpeg';
+// CORRECT PATHS - relative from src/app/components/ to src/imports/
+import vinnyPortrait from '../../imports/viiinyRIP.png';
 import treeImage from '../../imports/tree.png';
 
 // ============================================
@@ -26,267 +26,43 @@ function StarfieldCanvas({ active }: { active: boolean }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
 
-    const stars: Array<{
-      x: number; y: number; radius: number;
-      twinkleSpeed: number; twinkleOffset: number;
-      baseOpacity: number;
-    }> = [];
-
-    for (let i = 0; i < 200; i++) {
+    const stars: Array<{ x: number; y: number; radius: number; speed: number; opacity: number }> = [];
+    for (let i = 0; i < 150; i++) {
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        radius: Math.random() * 1.2 + 0.2,
-        twinkleSpeed: Math.random() * 0.01 + 0.002,
-        twinkleOffset: Math.random() * Math.PI * 2,
-        baseOpacity: Math.random() * 0.2 + 0.05,
-      });
-    }
-
-    let shootingStars: any[] = [];
-
-    function spawnShootingStar() {
-      if (shootingStars.length > 1) return;
-      shootingStars.push({
-        x: Math.random() * canvas.width * 0.6 + canvas.width * 0.2,
-        y: Math.random() * canvas.height * 0.3,
-        vx: -4 - Math.random() * 5,
-        vy: 1 + Math.random() * 2.5,
-        length: 50 + Math.random() * 60,
-        opacity: 0.12 + Math.random() * 0.08,
-        trail: [] as { x: number; y: number }[],
+        radius: Math.random() * 1.5 + 0.5,
+        speed: Math.random() * 0.01 + 0.003,
+        opacity: Math.random() * 0.4 + 0.1,
       });
     }
 
     function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const time = Date.now();
-
-      stars.forEach((star) => {
-        const flicker = Math.sin(time * star.twinkleSpeed + star.twinkleOffset) * 0.3 + 0.7;
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 240, 200, ${star.baseOpacity * flicker})`;
-        ctx.fill();
-      });
-
-      for (let i = shootingStars.length - 1; i >= 0; i--) {
-        const s = shootingStars[i];
-        s.x += s.vx;
-        s.y += s.vy;
-        s.opacity -= 0.002;
-        s.trail.unshift({ x: s.x, y: s.y });
-        if (s.trail.length > 12) s.trail.pop();
-
-        if (s.opacity <= 0 || s.x < -100) {
-          shootingStars.splice(i, 1);
-          continue;
-        }
-
-        for (let j = 0; j < s.trail.length; j++) {
-          const t = s.trail[j];
-          const trailAlpha = s.opacity * (1 - j / s.trail.length);
-          ctx.beginPath();
-          ctx.arc(t.x, t.y, 0.8, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 220, 160, ${trailAlpha * 0.4})`;
-          ctx.fill();
-        }
-
-        const gradient = ctx.createLinearGradient(s.x, s.y, s.x - s.length * 0.7, s.y - s.length * 0.35);
-        gradient.addColorStop(0, `rgba(255, 240, 200, ${s.opacity})`);
-        gradient.addColorStop(1, 'rgba(255, 200, 100, 0)');
-        ctx.beginPath();
-        ctx.moveTo(s.x, s.y);
-        ctx.lineTo(s.x - s.length, s.y - s.length * 0.5);
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-
-      animFrameRef.current = requestAnimationFrame(animate);
-    }
-
-    animate();
-
-    const spawnInterval = setInterval(() => {
-      if (Math.random() > 0.85) spawnShootingStar();
-    }, 8000);
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      cancelAnimationFrame(animFrameRef.current);
-      clearInterval(spawnInterval);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [active]);
-
-  if (!active) return null;
-  return <canvas ref={canvasRef} className="fixed inset-0 z-0" style={{ pointerEvents: 'none' }} />;
-}
-
-// ============================================
-// FLOATING PARTICLES (Leaves/Smoke/Wind from tree)
-// ============================================
-function FloatingParticles({ active }: { active: boolean }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animFrameRef = useRef<number>(0);
-  const windRef = useRef(0);
-
-  useEffect(() => {
-    if (!active) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    interface Particle {
-      x: number;
-      y: number;
-      size: number;
-      speedX: number;
-      speedY: number;
-      opacity: number;
-      rotation: number;
-      rotationSpeed: number;
-      type: 'leaf' | 'ember' | 'smoke';
-      life: number;
-      maxLife: number;
-    }
-
-    const particles: Particle[] = [];
-
-    function spawnParticle() {
-      if (!canvas) return;
-      const rand = Math.random();
-      let type: 'leaf' | 'ember' | 'smoke';
-      if (rand < 0.5) type = 'leaf';
-      else if (rand < 0.75) type = 'smoke';
-      else type = 'ember';
-      
-      const life = 150 + Math.random() * 100;
-      particles.push({
-        x: Math.random() * canvas.width * 0.35 + canvas.width * 0.05,
-        y: Math.random() * canvas.height * 0.7 + canvas.height * 0.1,
-        size: Math.random() * (type === 'leaf' ? 6 : 4) + (type === 'leaf' ? 2 : 1),
-        speedX: Math.random() * (type === 'smoke' ? 0.4 : 1.2) + 0.3,
-        speedY: (Math.random() - 0.5) * (type === 'smoke' ? 0.3 : 0.8),
-        opacity: Math.random() * (type === 'ember' ? 0.7 : 0.4) + 0.1,
-        rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.05,
-        type,
-        life: 0,
-        maxLife: life,
-      });
-    }
-
-    let lastSpawn = 0;
-    let time = 0;
-
-    function animate(now: number) {
       if (!ctx || !canvas) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      time = now;
       
-      const wind = Math.sin(now * 0.001) * 0.3;
-      windRef.current = wind;
-
-      if (now - lastSpawn > 180 && particles.length < 45) {
-        spawnParticle();
-        lastSpawn = now;
-        if (Math.random() > 0.7) spawnParticle();
-      }
-
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.life++;
-        p.x += p.speedX + wind * 0.15;
-        p.y += p.speedY;
-        p.rotation += p.rotationSpeed;
-        
-        if (p.type === 'smoke') {
-          p.y -= 0.08;
-          p.opacity *= 0.998;
-        } else {
-          p.speedY += 0.01;
-          p.opacity *= 0.996;
-        }
-        
-        if (p.type === 'leaf') {
-          p.rotation += Math.sin(now * 0.003 + i) * 0.02;
-        }
-
-        const lifeProgress = p.life / p.maxLife;
-
-        if (p.life > p.maxLife || p.opacity < 0.02 || p.x > canvas.width + 80 || p.y < -80 || p.y > canvas.height + 80) {
-          particles.splice(i, 1);
-          continue;
-        }
-
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rotation);
-        ctx.globalAlpha = p.opacity * (1 - lifeProgress * 0.5);
-
-        if (p.type === 'leaf') {
-          ctx.beginPath();
-          ctx.moveTo(0, -p.size);
-          ctx.quadraticCurveTo(p.size * 0.8, 0, 0, p.size);
-          ctx.quadraticCurveTo(-p.size * 0.8, 0, 0, -p.size);
-          ctx.fillStyle = `rgba(100, 65, 35, ${0.4 - lifeProgress * 0.2})`;
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(0, -p.size * 0.6);
-          ctx.lineTo(p.size * 0.3, 0);
-          ctx.lineTo(0, p.size * 0.6);
-          ctx.lineTo(-p.size * 0.3, 0);
-          ctx.fillStyle = `rgba(70, 45, 25, ${0.3 - lifeProgress * 0.1})`;
-          ctx.fill();
-        } else if (p.type === 'ember') {
-          const flicker = 0.7 + Math.sin(now * 0.01 + i) * 0.3;
-          ctx.beginPath();
-          ctx.arc(0, 0, p.size * 0.7, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 120, 40, ${p.opacity * flicker * 0.8})`;
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(0, 0, p.size * 0.3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 220, 100, ${p.opacity * flicker})`;
-          ctx.fill();
-        } else {
-          ctx.beginPath();
-          ctx.ellipse(0, 0, p.size * (0.8 + lifeProgress * 0.5), p.size * 0.6, 0, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(80, 70, 60, ${p.opacity * 0.25})`;
-          ctx.fill();
-        }
-
-        ctx.restore();
-      }
-
+      const time = Date.now();
+      
+      stars.forEach((star) => {
+        const flicker = 0.5 + Math.sin(time * star.speed) * 0.3;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 235, 200, ${star.opacity * flicker})`;
+        ctx.fill();
+      });
+      
       animFrameRef.current = requestAnimationFrame(animate);
     }
-
-    for (let i = 0; i < 18; i++) {
-      setTimeout(() => spawnParticle(), i * 80);
-    }
-
-    animFrameRef.current = requestAnimationFrame(animate);
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', handleResize);
-
+    
+    animate();
+    
     return () => {
       cancelAnimationFrame(animFrameRef.current);
       window.removeEventListener('resize', handleResize);
@@ -294,7 +70,7 @@ function FloatingParticles({ active }: { active: boolean }) {
   }, [active]);
 
   if (!active) return null;
-  return <canvas ref={canvasRef} className="fixed inset-0 z-[5]" style={{ pointerEvents: 'none' }} />;
+  return <canvas ref={canvasRef} className="fixed inset-0 z-0 pointer-events-none" />;
 }
 
 // ============================================
@@ -358,7 +134,6 @@ function DeepSpacePortrait({ revealProgress }: { revealProgress: number }) {
   const scale = 0.25 + eased * 0.75;
   const blurPx = Math.max(0, 30 * (1 - eased));
   const opacity = Math.min(1, eased * 1.2);
-  const sepia = Math.max(0, (1 - eased) * 0.6);
 
   return (
     <div
@@ -368,7 +143,7 @@ function DeepSpacePortrait({ revealProgress }: { revealProgress: number }) {
         height: 'clamp(140px, 22vw, 210px)',
         transform: `scale(${scale})`,
         opacity,
-        filter: `blur(${blurPx * 0.5}px) sepia(${sepia})`,
+        filter: `blur(${blurPx * 0.5}px)`,
       }}
     >
       <div
@@ -396,11 +171,10 @@ function MemorialCandle() {
   const [isLit, setIsLit] = useState(false);
   const [flameHeight, setFlameHeight] = useState(0);
   const [windStrength, setWindStrength] = useState(0);
-  const [flameOffsetX, setFlameOffsetX] = useState(0);
   const [glowIntensity, setGlowIntensity] = useState(0);
 
   useEffect(() => {
-    const appearTimer = setTimeout(() => setIsLit(true), 1200);
+    const appearTimer = setTimeout(() => setIsLit(true), 1000);
     return () => clearTimeout(appearTimer);
   }, []);
 
@@ -408,18 +182,14 @@ function MemorialCandle() {
     if (!isLit) return;
     
     const startTime = performance.now();
-    const duration = 1100;
+    const duration = 1000;
     
     function growFlame(now: number) {
       const elapsed = now - startTime;
       const progress = Math.min(1, elapsed / duration);
-      const eased = 1 - Math.pow(1 - progress, 1.5);
-      setFlameHeight(eased);
-      setGlowIntensity(eased);
-      
-      if (progress < 1) {
-        requestAnimationFrame(growFlame);
-      }
+      setFlameHeight(progress);
+      setGlowIntensity(progress);
+      if (progress < 1) requestAnimationFrame(growFlame);
     }
     
     requestAnimationFrame(growFlame);
@@ -427,23 +197,12 @@ function MemorialCandle() {
 
   useEffect(() => {
     if (!isLit) return;
-    
     let frameId: number;
-    let lastTime = performance.now();
-    
     function animateFlicker(now: number) {
-      const delta = Math.min(0.05, (now - lastTime) / 1000);
-      lastTime = now;
-      
-      const windBase = Math.sin(now * 0.002) * 0.4;
-      const windNoise = Math.sin(now * 0.017) * 0.2 + Math.sin(now * 0.053) * 0.15;
-      const wind = windBase + windNoise;
+      const wind = Math.sin(now * 0.002) * 0.3 + Math.sin(now * 0.015) * 0.15;
       setWindStrength(wind);
-      setFlameOffsetX(wind * 1.8);
-      
       frameId = requestAnimationFrame(animateFlicker);
     }
-    
     frameId = requestAnimationFrame(animateFlicker);
     return () => cancelAnimationFrame(frameId);
   }, [isLit]);
@@ -451,98 +210,75 @@ function MemorialCandle() {
   return (
     <motion.div
       className="relative flex flex-col items-center z-10"
-      initial={{ opacity: 0, x: 40, y: 20 }}
+      initial={{ opacity: 0, x: 30, y: 20 }}
       animate={{ opacity: 1, x: 0, y: 0 }}
-      transition={{ duration: 0.9, ease: [0.22, 0.88, 0.36, 1], delay: 0.2 }}
+      transition={{ duration: 0.8, delay: 0.2 }}
     >
       <motion.div
         className="absolute rounded-full pointer-events-none"
         style={{
-          width: 140,
-          height: 140,
-          background: `radial-gradient(circle, rgba(255,100,0,${glowIntensity * 0.22}) 0%, rgba(255,60,0,${glowIntensity * 0.08}) 50%, transparent 80%)`,
-          filter: 'blur(18px)',
+          width: 120,
+          height: 120,
+          background: `radial-gradient(circle, rgba(255,100,0,${glowIntensity * 0.2}) 0%, transparent 70%)`,
+          filter: 'blur(15px)',
           left: '50%',
           top: '50%',
           transform: 'translate(-50%, -50%)',
         }}
-        animate={{
-          scale: isLit ? [1, 1.18, 1] : 0.5,
-        }}
-        transition={{ duration: 2.2, repeat: isLit ? Infinity : 0, ease: 'easeInOut' }}
+        animate={{ scale: isLit ? [1, 1.15, 1] : 0.5 }}
+        transition={{ duration: 2, repeat: isLit ? Infinity : 0 }}
       />
 
-      <div className="relative" style={{ width: 24, height: 100 }}>
+      <div className="relative" style={{ width: 22, height: 95 }}>
         <motion.div
           className="absolute bottom-0 left-0 right-0 rounded-sm"
           style={{
-            height: 88,
+            height: 84,
             background: 'linear-gradient(180deg, #F8F0E4 0%, #E8D8C0 40%, #D4C4A8 100%)',
-            boxShadow: 'inset -1.5px 0 5px rgba(0,0,0,0.06), 0 5px 15px rgba(0,0,0,0.15)',
           }}
           initial={{ scaleY: 0, transformOrigin: 'bottom' }}
           animate={{ scaleY: 1 }}
-          transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
+          transition={{ duration: 0.7, delay: 0.1 }}
         />
 
         <motion.div
           className="absolute left-1/2 -translate-x-1/2 rounded-full"
-          style={{ bottom: 88, width: 2.2, height: 11, background: '#2a1a0a' }}
+          style={{ bottom: 84, width: 2, height: 10, background: '#2a1a0a' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.3 }}
         />
 
         <motion.div
-          className="absolute"
-          style={{ 
-            left: '50%', 
-            bottom: 96,
-            x: flameOffsetX,
-          }}
+          className="absolute left-1/2 -translate-x-1/2"
+          style={{ bottom: 92 }}
           animate={{
             scaleY: isLit ? flameHeight * (0.85 + Math.abs(windStrength) * 0.2) : 0,
-            scaleX: isLit ? (0.7 + Math.abs(windStrength) * 0.15) * Math.min(1, flameHeight * 1.1) : 0,
-            y: isLit ? [
-              0, 
-              -1.2 - Math.abs(windStrength) * 1.5, 
-              0.6 + windStrength * 1.2, 
-              -0.5 - windStrength * 1, 
-              0
-            ] : 0,
+            scaleX: isLit ? (0.75 + Math.abs(windStrength) * 0.1) * Math.min(1, flameHeight * 1.1) : 0,
+            x: windStrength * 2,
           }}
-          transition={{ 
-            duration: 0.2, 
-            repeat: isLit ? Infinity : 0,
-            repeatType: 'mirror',
-            ease: 'easeInOut',
-          }}
+          transition={{ duration: 0.15 }}
         >
-          <svg width="28" height="48" viewBox="0 0 28 48" style={{ overflow: 'visible' }}>
-            <defs>
-              <radialGradient id="fo" cx="50%" cy="30%" r="50%">
-                <stop offset="0%" stopColor="#FFD54F" />
-                <stop offset="55%" stopColor="#FF9800" />
-                <stop offset="100%" stopColor="#E65100" stopOpacity="0.9" />
-              </radialGradient>
-              <radialGradient id="fi" cx="50%" cy="55%" r="40%">
-                <stop offset="0%" stopColor="#FFFFFF" />
-                <stop offset="45%" stopColor="#FFF9E6" />
-                <stop offset="100%" stopColor="#FFD54F" />
-              </radialGradient>
-            </defs>
-            <path 
-              d="M14 2 C10.5 11, 5.5 17, 5.5 25 C5.5 33, 9 39, 14 39 C19 39, 22.5 33, 22.5 25 C22.5 17, 17.5 11, 14 2Z" 
-              fill="url(#fo)" 
-              opacity={Math.min(0.95, flameHeight * 1.1)} 
-            />
-            <path 
-              d="M14 10 C11.5 16, 9.5 20, 9.5 25 C9.5 29.5, 11 33, 14 33 C17 33, 18.5 29.5, 18.5 25 C18.5 20, 16.5 16, 14 10Z" 
-              fill="url(#fi)" 
-              opacity={Math.min(0.9, flameHeight * 1.15)} 
-            />
+          <svg width="26" height="44" viewBox="0 0 26 44">
+            <path d="M13 2 C9.5 10, 4.5 16, 4.5 24 C4.5 32, 8 38, 13 38 C18 38, 21.5 32, 21.5 24 C21.5 16, 16.5 10, 13 2Z" fill="#FF8C00" opacity={0.9} />
+            <path d="M13 9 C10.5 15, 8.5 19, 8.5 24 C8.5 28, 10 31.5, 13 31.5 C16 31.5, 17.5 28, 17.5 24 C17.5 19, 15.5 15, 13 9Z" fill="#FFD54F" opacity={0.85} />
           </svg>
         </motion.div>
+
+        {isLit && [0, 1, 2].map((i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-orange-400"
+            style={{ width: 2, height: 2, left: '50%' }}
+            initial={{ x: -4 + i * 4, y: -90, opacity: 0.7 }}
+            animate={{
+              y: [-90, -125, -165],
+              x: [-4 + i * 4, -10 + i * 6, -2 + i * 5],
+              opacity: [0.7, 0.3, 0],
+            }}
+            transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.4 }}
+          />
+        ))}
       </div>
     </motion.div>
   );
@@ -566,14 +302,12 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
   useEffect(() => {
     const startTime = performance.now();
     let frameId: number;
-
     function tick(now: number) {
       const elapsed = now - startTime;
       const raw = Math.min(1, elapsed / PORTRAIT_REVEAL_DURATION);
       setRevealProgress(raw);
       if (raw < 1) frameId = requestAnimationFrame(tick);
     }
-
     frameId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frameId);
   }, []);
@@ -600,14 +334,14 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
 
   useEffect(() => {
     if (phase === 2) {
-      const timer = setTimeout(() => setShowEnterButton(true), 3400);
+      const timer = setTimeout(() => setShowEnterButton(true), 3000);
       return () => clearTimeout(timer);
     }
   }, [phase]);
 
-  const handleSkipOrEnter = useCallback(() => {
+  const handleEnter = useCallback(() => {
     setIsExiting(true);
-    setTimeout(onEnter, 2800);
+    setTimeout(onEnter, 2500);
   }, [onEnter]);
 
   const bgColor = phase === 0 ? '#FAFAF8' : phase === 1 ? '#0F0F0F' : '#020408';
@@ -623,8 +357,8 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
       }}
     >
       <StarfieldCanvas active={phase >= 1} />
-      <FloatingParticles active={phase === 2} />
 
+      {/* TREE BACKGROUND - dark phase only */}
       <AnimatePresence>
         {phase === 2 && (
           <motion.div
@@ -632,7 +366,7 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.8, ease: 'easeIn' }}
+            transition={{ duration: 1.8 }}
           >
             <img
               src={treeImage}
@@ -658,17 +392,7 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         )}
       </AnimatePresence>
 
-      {phase === 0 && (
-        <div
-          className="fixed inset-0 z-[2] pointer-events-none opacity-[0.015]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'repeat',
-            backgroundSize: '256px',
-          }}
-        />
-      )}
-
+      {/* ========== WHITE PHASE ========== */}
       <AnimatePresence>
         {phase === 0 && (
           <motion.div
@@ -679,7 +403,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
             <div className="mb-10">
               <DeepSpacePortrait revealProgress={revealProgress} />
             </div>
-
             <div className="relative" style={{ height: 90, width: '100%', maxWidth: 700 }}>
               {previousPhraseIndex !== null && (
                 <Phrase
@@ -701,6 +424,7 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         )}
       </AnimatePresence>
 
+      {/* ========== DARK PHASE ========== */}
       <AnimatePresence>
         {phase === 2 && (
           <motion.div
@@ -708,12 +432,12 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
             style={{ alignItems: 'flex-start' }}
             initial={{ opacity: 0 }}
             animate={isExiting ? { opacity: 0, filter: 'blur(8px)', y: -20 } : { opacity: 1, filter: 'blur(0px)', y: 0 }}
-            transition={isExiting ? { duration: 1.2, ease: 'easeOut' } : { duration: 1.5, ease: 'easeOut' }}
+            transition={isExiting ? { duration: 1.2 } : { duration: 1.5 }}
           >
             <motion.div
               className="mb-4"
-              initial={{ opacity: 0, x: -40, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
               <div
@@ -730,7 +454,7 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
 
             <motion.h1
               className="font-serif text-[#F5EDD8] leading-tight mb-3 text-left"
-              style={{ fontSize: 'clamp(1.6rem, 4.5vw, 3.8rem)', fontWeight: 300, maxWidth: '70%', letterSpacing: '0.02em' }}
+              style={{ fontSize: 'clamp(1.6rem, 4.5vw, 3.8rem)', fontWeight: 300, maxWidth: '70%' }}
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1.1, delay: 0.55 }}
@@ -775,10 +499,9 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
                   scale: 1.04,
                   boxShadow: '0 0 50px rgba(212, 175, 106, 0.45)',
                   borderColor: '#D4AF6A',
-                  backgroundColor: 'rgba(212,175,106,0.05)',
                 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={handleSkipOrEnter}
+                onClick={handleEnter}
                 className="px-8 py-2.5 bg-transparent border border-[#D4AF6A]/40 text-[#E8C97A] rounded-full text-sm tracking-[0.22em] uppercase font-light backdrop-blur-sm transition-all duration-300"
               >
                 Enter Memorial →
@@ -788,6 +511,7 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         )}
       </AnimatePresence>
 
+      {/* Candle */}
       <AnimatePresence>
         {phase === 2 && (
           <div className="fixed bottom-8 right-8 z-15">
@@ -796,18 +520,20 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         )}
       </AnimatePresence>
 
+      {/* Skip button */}
       {phase === 0 && !isExiting && (
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.25 }}
           whileHover={{ opacity: 0.7 }}
-          onClick={handleSkipOrEnter}
+          onClick={handleEnter}
           className="fixed bottom-6 right-6 z-40 text-[#888480] text-xs tracking-[0.18em] uppercase hover:text-[#D4AF6A] transition-colors"
         >
           Skip →
         </motion.button>
       )}
 
+      {/* Exit animation */}
       <AnimatePresence>
         {isExiting && (
           <>
@@ -815,53 +541,22 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
               className="fixed inset-0 z-40 pointer-events-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1.2, ease: 'easeInOut' }}
+              transition={{ duration: 1.2 }}
             >
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: 'radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, rgba(0,0,0,0.8) 100%)',
-                }}
-              />
+              <div className="absolute inset-0 bg-black" />
             </motion.div>
-
             <motion.div
               className="fixed inset-0 z-40 pointer-events-none"
               initial={{ backdropFilter: 'blur(0px)' }}
               animate={{ backdropFilter: 'blur(12px)' }}
-              transition={{ duration: 1.5, ease: 'easeOut' }}
+              transition={{ duration: 1.5 }}
             />
-
             <motion.div
               className="fixed inset-0 z-50 pointer-events-none bg-white"
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 0, 0.95, 0] }}
-              transition={{ duration: 2.2, times: [0, 0.6, 0.85, 1], ease: 'easeOut' }}
+              transition={{ duration: 2.2, times: [0, 0.6, 0.85, 1] }}
             />
-
-            <motion.div
-              className="fixed bottom-8 right-8 z-45 pointer-events-none"
-              initial={{ opacity: 1, scale: 1 }}
-              animate={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 1.8, delay: 0.6, ease: 'easeOut' }}
-            >
-              <div className="relative">
-                <div
-                  className="absolute -top-20 -left-20 w-40 h-40 rounded-full"
-                  style={{
-                    background: 'radial-gradient(circle, rgba(255,100,0,0.4) 0%, rgba(255,60,0,0.15) 50%, transparent 80%)',
-                    filter: 'blur(15px)',
-                  }}
-                />
-                <div className="relative w-6 h-20">
-                  <div className="absolute bottom-0 w-5 h-16 rounded-sm bg-gradient-to-t from-[#E8D8C0] to-[#F8F0E4]" />
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-4 h-8">
-                    <div className="w-full h-full rounded-full bg-orange-400 animate-pulse" 
-                         style={{ filter: 'blur(3px)', boxShadow: '0 0 20px rgba(255,100,0,0.8)' }} />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
           </>
         )}
       </AnimatePresence>
