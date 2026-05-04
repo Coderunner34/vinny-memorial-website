@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// FIXED: Correct image paths
-// Update these paths to match your actual image locations
-import vinnyPortrait from '@/public/images/vinny-portrait.jpg';
-import treeImage from '@/public/images/tree.png';
+// FIXED: Use your actual image paths from src/imports
+import vinnyPortrait from '../../imports/WhatsApp_Image_2026-05-02_at_18.01.13_(1).jpeg';
+import treeImage from '../../imports/tree.png';
 
 // ============================================
 // TYPES
@@ -30,7 +29,6 @@ function StarfieldCanvas({ active }: { active: boolean }) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Very subtle stars - almost invisible
     const stars: Array<{
       x: number; y: number; radius: number;
       twinkleSpeed: number; twinkleOffset: number;
@@ -67,7 +65,6 @@ function StarfieldCanvas({ active }: { active: boolean }) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const time = Date.now();
 
-      // Draw stars - very faint
       stars.forEach((star) => {
         const flicker = Math.sin(time * star.twinkleSpeed + star.twinkleOffset) * 0.3 + 0.7;
         ctx.beginPath();
@@ -76,7 +73,6 @@ function StarfieldCanvas({ active }: { active: boolean }) {
         ctx.fill();
       });
 
-      // Shooting stars - very subtle
       for (let i = shootingStars.length - 1; i >= 0; i--) {
         const s = shootingStars[i];
         s.x += s.vx;
@@ -172,7 +168,6 @@ function FloatingParticles({ active }: { active: boolean }) {
 
     function spawnParticle() {
       if (!canvas) return;
-      // Spawn from tree area (left side, various heights)
       const rand = Math.random();
       let type: 'leaf' | 'ember' | 'smoke';
       if (rand < 0.5) type = 'leaf';
@@ -203,15 +198,12 @@ function FloatingParticles({ active }: { active: boolean }) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       time = now;
       
-      // Gentle wind variation - creates the feeling of a soft breeze
       const wind = Math.sin(now * 0.001) * 0.3;
       windRef.current = wind;
 
-      // Spawn particles rhythmically
       if (now - lastSpawn > 180 && particles.length < 45) {
         spawnParticle();
         lastSpawn = now;
-        // Sometimes spawn two at once
         if (Math.random() > 0.7) spawnParticle();
       }
 
@@ -222,16 +214,14 @@ function FloatingParticles({ active }: { active: boolean }) {
         p.y += p.speedY;
         p.rotation += p.rotationSpeed;
         
-        // Add slight upward drift for smoke
         if (p.type === 'smoke') {
           p.y -= 0.08;
           p.opacity *= 0.998;
         } else {
-          p.speedY += 0.01; // gravity for leaves/embers
+          p.speedY += 0.01;
           p.opacity *= 0.996;
         }
         
-        // Gentle wind flutter for leaves
         if (p.type === 'leaf') {
           p.rotation += Math.sin(now * 0.003 + i) * 0.02;
         }
@@ -249,7 +239,6 @@ function FloatingParticles({ active }: { active: boolean }) {
         ctx.globalAlpha = p.opacity * (1 - lifeProgress * 0.5);
 
         if (p.type === 'leaf') {
-          // Leaf shape
           ctx.beginPath();
           ctx.moveTo(0, -p.size);
           ctx.quadraticCurveTo(p.size * 0.8, 0, 0, p.size);
@@ -264,7 +253,6 @@ function FloatingParticles({ active }: { active: boolean }) {
           ctx.fillStyle = `rgba(70, 45, 25, ${0.3 - lifeProgress * 0.1})`;
           ctx.fill();
         } else if (p.type === 'ember') {
-          // Glowing ember with flicker
           const flicker = 0.7 + Math.sin(now * 0.01 + i) * 0.3;
           ctx.beginPath();
           ctx.arc(0, 0, p.size * 0.7, 0, Math.PI * 2);
@@ -275,7 +263,6 @@ function FloatingParticles({ active }: { active: boolean }) {
           ctx.fillStyle = `rgba(255, 220, 100, ${p.opacity * flicker})`;
           ctx.fill();
         } else {
-          // Smoke wisp
           ctx.beginPath();
           ctx.ellipse(0, 0, p.size * (0.8 + lifeProgress * 0.5), p.size * 0.6, 0, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(80, 70, 60, ${p.opacity * 0.25})`;
@@ -288,7 +275,6 @@ function FloatingParticles({ active }: { active: boolean }) {
       animFrameRef.current = requestAnimationFrame(animate);
     }
 
-    // Spawn initial particles
     for (let i = 0; i < 18; i++) {
       setTimeout(() => spawnParticle(), i * 80);
     }
@@ -365,7 +351,7 @@ function Phrase({
 }
 
 // ============================================
-// PORTRAIT - EMERGES FROM DEEP SPACE (blur to clear)
+// PORTRAIT - EMERGES FROM DEEP SPACE
 // ============================================
 function DeepSpacePortrait({ revealProgress }: { revealProgress: number }) {
   const eased = Math.pow(revealProgress, 0.55);
@@ -404,7 +390,7 @@ function DeepSpacePortrait({ revealProgress }: { revealProgress: number }) {
 }
 
 // ============================================
-// MEMORIAL CANDLE - WITH FLICKERING WIND EFFECT
+// MEMORIAL CANDLE
 // ============================================
 function MemorialCandle() {
   const [isLit, setIsLit] = useState(false);
@@ -414,12 +400,10 @@ function MemorialCandle() {
   const [glowIntensity, setGlowIntensity] = useState(0);
 
   useEffect(() => {
-    // Candle appears and lights
     const appearTimer = setTimeout(() => setIsLit(true), 1200);
     return () => clearTimeout(appearTimer);
   }, []);
 
-  // Animate flame growing when lit
   useEffect(() => {
     if (!isLit) return;
     
@@ -441,7 +425,6 @@ function MemorialCandle() {
     requestAnimationFrame(growFlame);
   }, [isLit]);
 
-  // Wind and flicker animation loop
   useEffect(() => {
     if (!isLit) return;
     
@@ -452,13 +435,10 @@ function MemorialCandle() {
       const delta = Math.min(0.05, (now - lastTime) / 1000);
       lastTime = now;
       
-      // Natural wind variation - sine wave with noise
       const windBase = Math.sin(now * 0.002) * 0.4;
       const windNoise = Math.sin(now * 0.017) * 0.2 + Math.sin(now * 0.053) * 0.15;
       const wind = windBase + windNoise;
       setWindStrength(wind);
-      
-      // Flame sways with wind
       setFlameOffsetX(wind * 1.8);
       
       frameId = requestAnimationFrame(animateFlicker);
@@ -475,7 +455,6 @@ function MemorialCandle() {
       animate={{ opacity: 1, x: 0, y: 0 }}
       transition={{ duration: 0.9, ease: [0.22, 0.88, 0.36, 1], delay: 0.2 }}
     >
-      {/* Large ambient glow - intensity grows with flame */}
       <motion.div
         className="absolute rounded-full pointer-events-none"
         style={{
@@ -486,7 +465,6 @@ function MemorialCandle() {
           left: '50%',
           top: '50%',
           transform: 'translate(-50%, -50%)',
-          willChange: 'transform',
         }}
         animate={{
           scale: isLit ? [1, 1.18, 1] : 0.5,
@@ -494,23 +472,7 @@ function MemorialCandle() {
         transition={{ duration: 2.2, repeat: isLit ? Infinity : 0, ease: 'easeInOut' }}
       />
 
-      {/* Ground glow */}
-      <motion.div
-        className="absolute bottom-[-30px] left-1/2 -translate-x-1/2 w-40 h-12 rounded-full pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse, rgba(255,120,0,${glowIntensity * 0.28}) 0%, transparent 70%)`,
-          filter: 'blur(10px)',
-        }}
-        animate={{ 
-          opacity: isLit ? [0.2, 0.55, 0.2] : 0,
-          scaleX: isLit ? [1, 1.15, 1] : 1,
-        }}
-        transition={{ duration: 2.5, repeat: isLit ? Infinity : 0, ease: 'easeInOut' }}
-      />
-
-      {/* Candle body container */}
       <div className="relative" style={{ width: 24, height: 100 }}>
-        {/* Wax body */}
         <motion.div
           className="absolute bottom-0 left-0 right-0 rounded-sm"
           style={{
@@ -523,23 +485,6 @@ function MemorialCandle() {
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
         />
 
-        {/* Wax drips */}
-        <motion.div
-          className="absolute top-2 left-0.5 w-2 h-4 rounded-full"
-          style={{ background: 'linear-gradient(180deg, #F5EDD8, #E0D0B0)' }}
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-        />
-        <motion.div
-          className="absolute top-1.5 right-0.5 w-1.5 h-3 rounded-full"
-          style={{ background: 'linear-gradient(180deg, #F5EDD8, #E0D0B0)' }}
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.5 }}
-        />
-
-        {/* Wick */}
         <motion.div
           className="absolute left-1/2 -translate-x-1/2 rounded-full"
           style={{ bottom: 88, width: 2.2, height: 11, background: '#2a1a0a' }}
@@ -548,7 +493,6 @@ function MemorialCandle() {
           transition={{ delay: 0.4 }}
         />
 
-        {/* FLAME with wind sway */}
         <motion.div
           className="absolute"
           style={{ 
@@ -557,7 +501,7 @@ function MemorialCandle() {
             x: flameOffsetX,
           }}
           animate={{
-            scaleY: isLit ? flameHeight * (0.85 + Math.abs(windStrength) * 0.2 + Math.random() * 0.1) : 0,
+            scaleY: isLit ? flameHeight * (0.85 + Math.abs(windStrength) * 0.2) : 0,
             scaleX: isLit ? (0.7 + Math.abs(windStrength) * 0.15) * Math.min(1, flameHeight * 1.1) : 0,
             y: isLit ? [
               0, 
@@ -599,43 +543,7 @@ function MemorialCandle() {
             />
           </svg>
         </motion.div>
-
-        {/* Floating embers / sparks */}
-        {isLit && [0, 1, 2, 3].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full"
-            style={{ 
-              width: 2.5, 
-              height: 2.5, 
-              background: '#FFB347',
-              left: '50%',
-              filter: 'blur(0.5px)',
-            }}
-            initial={{ x: -6 + i * 4 + (Math.random() - 0.5) * 6, y: -95, opacity: 0.8 }}
-            animate={{
-              y: [-95, -130, -175],
-              x: [-6 + i * 4 + (Math.random() - 0.5) * 4, -14 + i * 6 + (Math.random() - 0.5) * 8, -5 + i * 5],
-              opacity: [0.8, 0.4, 0],
-              scale: [1, 1.1, 0.6],
-            }}
-            transition={{ duration: 1.6 + i * 0.3, repeat: Infinity, delay: i * 0.45, ease: 'easeOut' }}
-          />
-        ))}
       </div>
-
-      {/* "Lighting..." text - subtle, fades out */}
-      {!isLit && (
-        <motion.p
-          className="text-[#D4AF6A]/40 text-[10px] tracking-[0.25em] mt-3 font-light"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          lighting a candle for you...
-        </motion.p>
-      )}
     </motion.div>
   );
 }
@@ -655,7 +563,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
   const phrases = ['He ran.', 'He laughed.', 'He was here.'];
   const PORTRAIT_REVEAL_DURATION = 6800;
 
-  // Portrait reveal progress
   useEffect(() => {
     const startTime = performance.now();
     let frameId: number;
@@ -671,7 +578,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
     return () => cancelAnimationFrame(frameId);
   }, []);
 
-  // Handle phrase completion
   const handlePhraseWriteComplete = useCallback(
     (index: number) => {
       if (index < phrases.length - 1) {
@@ -692,7 +598,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
     [phrases.length]
   );
 
-  // Show enter button after dark phase settles
   useEffect(() => {
     if (phase === 2) {
       const timer = setTimeout(() => setShowEnterButton(true), 3400);
@@ -701,10 +606,9 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
   }, [phase]);
 
   const handleSkipOrEnter = useCallback(() => {
-  setIsExiting(true);
-  // Wait for cinematic exit animation (blur + fade)
-  setTimeout(onEnter, 2800);
-}, [onEnter]);
+    setIsExiting(true);
+    setTimeout(onEnter, 2800);
+  }, [onEnter]);
 
   const bgColor = phase === 0 ? '#FAFAF8' : phase === 1 ? '#0F0F0F' : '#020408';
 
@@ -718,13 +622,9 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         transition: 'background-color 1.4s cubic-bezier(0.22, 0.61, 0.36, 1)',
       }}
     >
-      {/* STARFIELD - only in dark phase */}
       <StarfieldCanvas active={phase >= 1} />
-
-      {/* FLOATING PARTICLES - leaves, embers, smoke from tree area */}
       <FloatingParticles active={phase === 2} />
 
-      {/* TREE IMAGE AS BACKGROUND - dark phase only */}
       <AnimatePresence>
         {phase === 2 && (
           <motion.div
@@ -741,7 +641,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
               className="w-full h-full object-cover"
               style={{ opacity: 0.55 }}
             />
-            {/* Left side blur overlay so text is readable */}
             <div
               className="absolute inset-0"
               style={{
@@ -749,7 +648,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
                 backdropFilter: 'blur(4px)',
               }}
             />
-            {/* Bottom-right vignette for candle area */}
             <div
               className="absolute inset-0"
               style={{
@@ -760,7 +658,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         )}
       </AnimatePresence>
 
-      {/* PAPER TEXTURE - white phase only */}
       {phase === 0 && (
         <div
           className="fixed inset-0 z-[2] pointer-events-none opacity-[0.015]"
@@ -772,7 +669,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         />
       )}
 
-      {/* ========== WHITE PHASE ========== */}
       <AnimatePresence>
         {phase === 0 && (
           <motion.div
@@ -805,17 +701,15 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         )}
       </AnimatePresence>
 
-      {/* ========== DARK PHASE ========== */}
       <AnimatePresence>
         {phase === 2 && (
-<motion.div
-  className="fixed inset-0 z-10 flex flex-col justify-center px-8 md:px-16"
-  style={{ alignItems: 'flex-start' }}
-  initial={{ opacity: 0 }}
-  animate={isExiting ? { opacity: 0, filter: 'blur(8px)', y: -20 } : { opacity: 1, filter: 'blur(0px)', y: 0 }}
-  transition={isExiting ? { duration: 1.2, ease: 'easeOut' } : { duration: 1.5, ease: 'easeOut' }}
->
-            {/* Small portrait above name */}
+          <motion.div
+            className="fixed inset-0 z-10 flex flex-col justify-center px-8 md:px-16"
+            style={{ alignItems: 'flex-start' }}
+            initial={{ opacity: 0 }}
+            animate={isExiting ? { opacity: 0, filter: 'blur(8px)', y: -20 } : { opacity: 1, filter: 'blur(0px)', y: 0 }}
+            transition={isExiting ? { duration: 1.2, ease: 'easeOut' } : { duration: 1.5, ease: 'easeOut' }}
+          >
             <motion.div
               className="mb-4"
               initial={{ opacity: 0, x: -40, filter: 'blur(8px)' }}
@@ -834,7 +728,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
               </div>
             </motion.div>
 
-            {/* Name */}
             <motion.h1
               className="font-serif text-[#F5EDD8] leading-tight mb-3 text-left"
               style={{ fontSize: 'clamp(1.6rem, 4.5vw, 3.8rem)', fontWeight: 300, maxWidth: '70%', letterSpacing: '0.02em' }}
@@ -845,7 +738,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
               Vincent Mwaura Wairimu
             </motion.h1>
 
-            {/* Dates */}
             <motion.p
               className="text-[#D4AF6A] font-light tracking-[0.28em] mb-5 text-left"
               style={{ fontSize: 'clamp(0.8rem, 1.6vw, 1rem)' }}
@@ -856,7 +748,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
               2005 — 2026
             </motion.p>
 
-            {/* Gold divider */}
             <motion.div
               className="mb-5"
               style={{ width: 80, height: 1, background: 'rgba(212,175,106,0.4)' }}
@@ -865,7 +756,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
               transition={{ duration: 0.9, delay: 1.2 }}
             />
 
-            {/* Quote */}
             <motion.p
               className="text-[#C4B89A] italic text-left leading-relaxed mb-10 max-w-md"
               style={{ fontSize: 'clamp(0.78rem, 1.5vw, 0.92rem)' }}
@@ -877,7 +767,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
               Forever remembered, forever loved."
             </motion.p>
 
-            {/* Enter Button */}
             {showEnterButton && (
               <motion.button
                 initial={{ opacity: 0, x: -30 }}
@@ -899,7 +788,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         )}
       </AnimatePresence>
 
-      {/* Candle - positioned at bottom-right, rendered separately so it doesn't interfere with text */}
       <AnimatePresence>
         {phase === 2 && (
           <div className="fixed bottom-8 right-8 z-15">
@@ -908,7 +796,6 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         )}
       </AnimatePresence>
 
-      {/* Skip button - white phase only */}
       {phase === 0 && !isExiting && (
         <motion.button
           initial={{ opacity: 0 }}
@@ -921,71 +808,63 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
         </motion.button>
       )}
 
-     {/* ========== CINEMATIC EXIT SEQUENCE ========== */}
-{/* Everything blurs out, candle is the last thing visible */}
-<AnimatePresence>
-  {isExiting && (
-    <>
-      {/* Dark vignette that slowly closes in */}
-      <motion.div
-        className="fixed inset-0 z-40 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, ease: 'easeInOut' }}
-      >
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, rgba(0,0,0,0.8) 100%)',
-          }}
-        />
-      </motion.div>
+      <AnimatePresence>
+        {isExiting && (
+          <>
+            <motion.div
+              className="fixed inset-0 z-40 pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, ease: 'easeInOut' }}
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: 'radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, rgba(0,0,0,0.8) 100%)',
+                }}
+              />
+            </motion.div>
 
-      {/* Blur overlay that increases over time - affects the whole screen */}
-      <motion.div
-        className="fixed inset-0 z-40 pointer-events-none"
-        initial={{ backdropFilter: 'blur(0px)' }}
-        animate={{ backdropFilter: 'blur(12px)' }}
-        transition={{ duration: 1.5, ease: 'easeOut' }}
-      />
+            <motion.div
+              className="fixed inset-0 z-40 pointer-events-none"
+              initial={{ backdropFilter: 'blur(0px)' }}
+              animate={{ backdropFilter: 'blur(12px)' }}
+              transition={{ duration: 1.5, ease: 'easeOut' }}
+            />
 
-      {/* White flash that pulses at the very end */}
-      <motion.div
-        className="fixed inset-0 z-50 pointer-events-none bg-white"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 0, 0.95, 0] }}
-        transition={{ duration: 2.2, times: [0, 0.6, 0.85, 1], ease: 'easeOut' }}
-      />
+            <motion.div
+              className="fixed inset-0 z-50 pointer-events-none bg-white"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0, 0.95, 0] }}
+              transition={{ duration: 2.2, times: [0, 0.6, 0.85, 1], ease: 'easeOut' }}
+            />
 
-      {/* Final candle glow that fades last - overlays everything */}
-      <motion.div
-        className="fixed bottom-8 right-8 z-45 pointer-events-none"
-        initial={{ opacity: 1, scale: 1 }}
-        animate={{ opacity: 0, scale: 0.8 }}
-        transition={{ duration: 1.8, delay: 0.6, ease: 'easeOut' }}
-      >
-        <div className="relative">
-          {/* Candle glow that pulses as it fades */}
-          <div
-            className="absolute -top-20 -left-20 w-40 h-40 rounded-full"
-            style={{
-              background: 'radial-gradient(circle, rgba(255,100,0,0.4) 0%, rgba(255,60,0,0.15) 50%, transparent 80%)',
-              filter: 'blur(15px)',
-            }}
-          />
-          {/* Simplified candle icon that remains visible longest */}
-          <div className="relative w-6 h-20">
-            <div className="absolute bottom-0 w-5 h-16 rounded-sm bg-gradient-to-t from-[#E8D8C0] to-[#F8F0E4]" />
-            <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-4 h-8">
-              <div className="w-full h-full rounded-full bg-orange-400 animate-pulse" 
-                   style={{ filter: 'blur(3px)', boxShadow: '0 0 20px rgba(255,100,0,0.8)' }} />
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </>
-  )}
-</AnimatePresence>
+            <motion.div
+              className="fixed bottom-8 right-8 z-45 pointer-events-none"
+              initial={{ opacity: 1, scale: 1 }}
+              animate={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 1.8, delay: 0.6, ease: 'easeOut' }}
+            >
+              <div className="relative">
+                <div
+                  className="absolute -top-20 -left-20 w-40 h-40 rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle, rgba(255,100,0,0.4) 0%, rgba(255,60,0,0.15) 50%, transparent 80%)',
+                    filter: 'blur(15px)',
+                  }}
+                />
+                <div className="relative w-6 h-20">
+                  <div className="absolute bottom-0 w-5 h-16 rounded-sm bg-gradient-to-t from-[#E8D8C0] to-[#F8F0E4]" />
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-4 h-8">
+                    <div className="w-full h-full rounded-full bg-orange-400 animate-pulse" 
+                         style={{ filter: 'blur(3px)', boxShadow: '0 0 20px rgba(255,100,0,0.8)' }} />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
