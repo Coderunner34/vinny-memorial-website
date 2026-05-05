@@ -15,15 +15,15 @@ interface Candle {
 
 // Candle images from your imports/candlesImage folder
 const candleImages = [
-  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.08.jpeg',
-  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.09 (1).jpeg',
-  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.09.jpeg',
-  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.10 (1).jpeg',
-  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.10 (2).jpeg',
-  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.10.jpeg',
-  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.11 (1).jpeg',
-  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.11.jpeg',
-  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.12.jpeg',
+  '/images/candlesImage/WhatsApp Image 2026-05-04 at 23.17.08.jpeg',
+  '/images/candlesImage/WhatsApp Image 2026-05-04 at 23.17.09 (1).jpeg',
+  '/images/candlesImage/WhatsApp Image 2026-05-04 at 23.17.09.jpeg',
+  '/images/candlesImage/WhatsApp Image 2026-05-04 at 23.17.10 (1).jpeg',
+  '/images/candlesImage/WhatsApp Image 2026-05-04 at 23.17.10 (2).jpeg',
+  '/images/candlesImage/WhatsApp Image 2026-05-04 at 23.17.10.jpeg',
+  '/images/candlesImage/WhatsApp Image 2026-05-04 at 23.17.11 (1).jpeg',
+  '/images/candlesImage/WhatsApp Image 2026-05-04 at 23.17.11.jpeg',
+  '/images/candlesImage/WhatsApp Image 2026-05-04 at 23.17.12.jpeg',
 ];
 
 export default function CandleWall() {

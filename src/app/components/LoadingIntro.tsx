@@ -2,9 +2,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // CORRECT PATHS - relative from src/app/components/ to src/imports/
-import vinnyPortrait from '../../imports/viiinyRIP.png';
-import treeImage from '../../imports/tree.png';
-
+// Use direct paths instead of imports
+const vinnyPortrait = 'src/imports/vinportrait.jpeg';
+const treeImage = '/images/tree.png';
 // ============================================
 // TYPES
 // ============================================
@@ -325,7 +325,7 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
   const [isExiting, setIsExiting] = useState(false);
   const [showPiano, setShowPiano] = useState(true);
 
-  const phrases = ['He ran.', 'He laughed.', 'He was here.'];
+  const phrases = ['He was full of life .', 'He found joy.', 'He was here.'];
   const PORTRAIT_REVEAL_DURATION = 6800;
 
   // Start piano

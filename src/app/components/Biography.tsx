@@ -128,12 +128,12 @@ export default function Biography() {
 
   // Vintage photo array with proper dimensions
   const vintagePhotos = [
-    { src: '/src/imports/WhatsApp Image 2026-05-02 at 18.01.14 (1).jpeg', caption: 'Vinny na mũrũ wa nyina (Vinny with his brother)', orientation: 'portrait' },
-    { src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.13_(1).jpeg', caption: 'Vinny -With his beloved uncle ', orientation: 'portrait' },
-    { src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.15_(1).jpeg', caption: 'The Radiant Smile', orientation: 'square' },
-    { src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.11.jpeg', caption: 'Family gathered in love', orientation: 'landscape' },
-    { src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.30.jpeg', caption: 'Church family - P.C.E.A. Gituamba', orientation: 'square' },
-    { src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.31_(1).jpeg', caption: 'A moment of joy', orientation: 'landscape' },
+    { src: '/images/WhatsApp Image 2026-05-02 at 18.01.14 (1).jpeg', caption: 'Vinny na mũrũ wa nyina (Vinny with his brother)', orientation: 'portrait' },
+    { src: '/images/WhatsApp_Image_2026-05-02_at_18.01.13_(1).jpeg', caption: 'Vinny -With his beloved uncle ', orientation: 'portrait' },
+    { src: '/images/WhatsApp_Image_2026-05-02_at_18.01.15_(1).jpeg', caption: 'The Radiant Smile', orientation: 'square' },
+    { src: '/images/WhatsApp_Image_2026-05-02_at_18.01.11.jpeg', caption: 'Family gathered in love', orientation: 'landscape' },
+    { src: '/images/WhatsApp_Image_2026-05-03_at_21.34.30.jpeg', caption: 'Church family - P.C.E.A. Gituamba', orientation: 'square' },
+    { src: '/images/WhatsApp_Image_2026-05-03_at_21.34.31_(1).jpeg', caption: 'A moment of joy', orientation: 'landscape' },
   ];
 
   return (
@@ -305,7 +305,7 @@ export default function Biography() {
                 <div className="relative bg-white rounded-2xl overflow-hidden shadow-xl border border-amber-100">
                   <div className="relative overflow-hidden">
                     <img
-                      src="/src/imports/WhatsApp Image 2026-05-02 at 18.01.14 (1).jpeg"
+                      src="/images/WhatsApp Image 2026-05-02 at 18.01.14 (1).jpeg"
                       alt="Vinny with his brother"
                       className="w-full h-[400px] object-contain object-center bg-gradient-to-b from-amber-50 to-amber-100"
                     />
@@ -376,7 +376,7 @@ export default function Biography() {
               className="text-center pt-4"
             >
               <a
-                href="/src/imports/EULOGY_FOR_THE_LATE_VINCENT_WAIRIMU_FINAL.pdf"
+                href="/images/EULOGY_FOR_THE_LATE_VINCENT_WAIRIMU_FINAL.pdf"
                 download
                 className="inline-flex items-center gap-2 px-6 py-3 bg-amber-600 text-white rounded-full text-sm hover:bg-amber-700 transition shadow-md hover:shadow-lg"
               >

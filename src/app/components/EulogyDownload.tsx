@@ -4,7 +4,7 @@ import { Download, FileText } from 'lucide-react';
 export default function EulogyDownload() {
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = '/src/imports/EULOGY_FOR_THE_LATE_VINCENT_WAIRIMU_FINAL.pdf';
+    link.href = '/images/EULOGY_FOR_THE_LATE_VINCENT_WAIRIMU_FINAL.pdf';
     link.download = 'Eulogy_Vincent_Wairimu.pdf';
     document.body.appendChild(link);
     link.click();

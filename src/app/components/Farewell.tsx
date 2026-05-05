@@ -93,7 +93,7 @@ export default function Farewell() {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url("/src/imports/viiinyRIP.png")',
+          backgroundImage: 'url("/images/viiinyRIP.png")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           opacity: 0.15,
@@ -139,7 +139,7 @@ export default function Farewell() {
           <div className="absolute inset-0 rounded-full bg-amber-500/15 blur-xl" />
           <div className="relative w-full h-full rounded-full overflow-hidden border border-amber-400/30 shadow-2xl">
             <img
-              src="/src/imports/farewellvinny.jpeg"
+              src="/images/farewellvinny.jpeg"
               alt="Vincent Mwaura Wairimu"
               className="w-full h-full object-cover object-center"
             />

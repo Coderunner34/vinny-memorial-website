@@ -3,12 +3,12 @@ import {
   Phone, Send, ChevronDown, Menu, X, Heart, Copy, Check, 
   Smartphone, Banknote, Gift, Flower2, Sparkles, User, 
   Mail, MessageCircle, ExternalLink, Briefcase, Globe, 
-  Camera, Code, Star, Quote, MapPin, Clock 
+  Camera, Code, Star, Quote
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Single portrait image
-const portraitImage = '/src/imports/farewellvinny.jpeg';
+const portraitImage = '/images/farewellvinny.jpeg';
 
 // Floating flower petals for the modal
 const flowerPetals = Array.from({ length: 20 }, (_, i) => ({
@@ -23,23 +23,31 @@ export default function HeroSection() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showDonateModal, setShowDonateModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showBellNotification, setShowBellNotification] = useState(false);
   const [copiedTill, setCopiedTill] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState('');
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const tillNumber = '538960';
   const phoneNumber = '0792211741';
   const email = 'sckaranu@gmail.com';
   const quickAmounts = [500, 1000, 2000, 5000];
 
+  // Auto-hide bell notification after 5 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Keep for compatibility but no rotation
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+    if (showBellNotification) {
+      // Play subtle sound
+      if (audioRef.current) {
+        audioRef.current.volume = 0.2;
+        audioRef.current.play().catch(() => {});
+      }
+      const timer = setTimeout(() => setShowBellNotification(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showBellNotification]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -70,6 +78,15 @@ export default function HeroSection() {
     }
   };
 
+  const handleBellClick = () => {
+    const bell = document.getElementById('bell-icon');
+    if (bell) {
+      bell.classList.add('bell-ring');
+      setTimeout(() => bell.classList.remove('bell-ring'), 1000);
+    }
+    setShowBellNotification(true);
+  };
+
   return (
     <>
       {/* TOP UTILITY BAR */}
@@ -78,23 +95,103 @@ export default function HeroSection() {
           <a href="tel:+254724554404" className="text-gray-600 hover:text-amber-700 flex items-center gap-1">
             <Phone className="w-3 h-3" /> 0724 554 404
           </a>
-          {/* <a href="tel:+254712345678" className="text-gray-600 hover:text-amber-700 flex items-center gap-1">
-            <Phone className="w-3 h-3" /> 0712 345 678
-          </a> */}
+          
+          {/* Bell Icon with Notification */}
+          <div className="relative">
+            <button
+              id="bell-icon"
+              onClick={handleBellClick}
+              className="relative text-gray-500 hover:text-amber-600 transition-colors p-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
+            </button>
+          </div>
+
           <button 
             onClick={() => setShowDonateModal(true)}
             className="border border-amber-600 text-amber-700 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm flex items-center gap-1 md:gap-2 hover:bg-amber-50 transition"
           >
-            <Flower2 className="w-3 h-3" /> Send Flowers & Support
+            <Flower2 className="w-3 h-3" /> Send Flowers
           </button>
+          
           <button 
             onClick={() => setShowContactModal(true)}
             className="border border-gray-300 text-gray-600 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm hover:border-amber-600 hover:text-amber-700 transition"
           >
-            Contact Developer
+            Developer
           </button>
         </div>
       </div>
+
+      {/* BELL NOTIFICATION POPUP */}
+      <AnimatePresence>
+        {showBellNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ type: "spring", damping: 25 }}
+            className="fixed top-14 right-4 z-[100] w-80 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden"
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-gray-50 to-white px-4 py-3 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center">
+                  <Heart className="w-3 h-3 text-amber-600" />
+                </div>
+                <p className="text-gray-700 text-xs font-medium">In Memory of Vinny</p>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                  <span className="text-amber-700 text-xs font-serif">VM</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-gray-800 text-sm font-medium"> <i style={{color: '#236fa1'}}>Inspired by </i>
+                      Karanu Isaac · Leon · Joseph Mburu
+                  </p>
+                  <p className="text-gray-500 text-xs mt-1 leading-relaxed">
+                    Class of 2018 · Karia-Ini Academy classmates of Vincent
+                  </p>
+                  <p className="text-gray-400 text-[10px] mt-2 italic">
+                    Forever in our hearts
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-gray-50 px-4 py-2 border-t border-gray-100 flex justify-between items-center">
+              <p className="text-gray-400 text-[10px]">Just now</p>
+              <button 
+                onClick={() => setShowBellNotification(false)}
+                className="text-gray-400 hover:text-gray-600 text-[10px] transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+
+            {/* Progress bar */}
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-100">
+              <motion.div
+                initial={{ width: "100%" }}
+                animate={{ width: "0%" }}
+                transition={{ duration: 5, ease: "linear" }}
+                className="h-full bg-gradient-to-r from-amber-400 to-rose-400 rounded-full"
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Hidden audio for notification sound */}
+      <audio ref={audioRef} src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" preload="auto" />
 
       {/* MAIN NAVIGATION */}
       <nav className="bg-white sticky top-0 z-50 border-b border-gray-100">
@@ -104,9 +201,7 @@ export default function HeroSection() {
               onClick={() => scrollToSection('hero')}
               className="cursor-pointer"
             >
-              <span className="text-3xl md:text-4xl font-serif tracking-wide text-gray-800" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                VINNY
-              </span>
+              <span className="text-3xl md:text-4xl font-serif tracking-wide text-gray-800">VINNY</span>
               <span className="block text-[10px] tracking-[0.2em] text-gray-400 uppercase mt-[-4px]">IN MEMORY OF</span>
             </div>
 
@@ -151,8 +246,7 @@ export default function HeroSection() {
         <div className="absolute inset-0 bg-black/40" />
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-          
-          {/* Single Portrait - No rotation */}
+          {/* Portrait */}
           <div className="mx-auto mb-6 w-24 h-24 md:w-32 md:h-32">
             <motion.div 
               className="relative w-full h-full rounded-full overflow-hidden border-2 border-white/50 shadow-lg"
@@ -160,11 +254,7 @@ export default function HeroSection() {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.8 }}
             >
-              <img
-                src={portraitImage}
-                alt="Vincent Mwaura Wairimu"
-                className="w-full h-full object-cover"
-              />
+              <img src={portraitImage} alt="Vincent Mwaura Wairimu" className="w-full h-full object-cover" />
             </motion.div>
           </div>
 
@@ -172,8 +262,7 @@ export default function HeroSection() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-light text-white mb-3 tracking-wide" 
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            className="text-4xl md:text-6xl lg:text-7xl font-light text-white mb-3 tracking-wide"
           >
             Honor & Remember
           </motion.h1>
@@ -212,9 +301,7 @@ export default function HeroSection() {
         </div>
       </section>
 
-      {/* ============================================ */}
-      {/* DONATE / SEND FLOWERS MODAL */}
-      {/* ============================================ */}
+      {/* DONATE MODAL */}
       <AnimatePresence>
         {showDonateModal && (
           <motion.div
@@ -224,29 +311,19 @@ export default function HeroSection() {
             className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4"
             onClick={() => setShowDonateModal(false)}
           >
-            {/* Floating flower petals */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
               {flowerPetals.map((petal) => (
                 <motion.div
                   key={petal.id}
                   className="absolute rounded-full bg-amber-400/30"
-                  style={{
-                    left: `${petal.left}%`,
-                    width: petal.size,
-                    height: petal.size,
-                  }}
+                  style={{ left: `${petal.left}%`, width: petal.size, height: petal.size }}
                   animate={{
                     y: ['-20vh', '120vh'],
                     x: [`${petal.left}%`, `${petal.left + (Math.random() - 0.5) * 30}%`],
                     opacity: [0, 0.6, 0],
                     rotate: [0, 360],
                   }}
-                  transition={{
-                    duration: petal.duration,
-                    repeat: Infinity,
-                    delay: petal.delay,
-                    ease: 'linear',
-                  }}
+                  transition={{ duration: petal.duration, repeat: Infinity, delay: petal.delay, ease: 'linear' }}
                 />
               ))}
             </div>
@@ -258,7 +335,6 @@ export default function HeroSection() {
               className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header with flowers */}
               <div className="bg-gradient-to-r from-amber-50 to-rose-50 p-6 text-center border-b border-amber-100">
                 <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-amber-100 flex items-center justify-center">
                   <Flower2 className="w-8 h-8 text-amber-600" />
@@ -268,7 +344,6 @@ export default function HeroSection() {
               </div>
 
               <div className="p-6 space-y-6">
-                {/* Till Number */}
                 <div>
                   <p className="text-gray-600 text-sm mb-2 flex items-center gap-2">
                     <Smartphone className="w-4 h-4 text-amber-600" />
@@ -276,16 +351,12 @@ export default function HeroSection() {
                   </p>
                   <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border border-gray-200">
                     <code className="text-gray-800 text-lg font-mono">{tillNumber}</code>
-                    <button
-                      onClick={() => handleCopy(tillNumber, 'till')}
-                      className="p-2 hover:bg-gray-200 rounded transition-colors"
-                    >
+                    <button onClick={() => handleCopy(tillNumber, 'till')} className="p-2 hover:bg-gray-200 rounded transition-colors">
                       {copiedTill ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-500" />}
                     </button>
                   </div>
                 </div>
 
-                {/* Quick Amounts */}
                 <div>
                   <p className="text-gray-600 text-sm mb-3 flex items-center gap-2">
                     <Gift className="w-4 h-4 text-amber-600" />
@@ -295,15 +366,8 @@ export default function HeroSection() {
                     {quickAmounts.map(amount => (
                       <button
                         key={amount}
-                        onClick={() => {
-                          setSelectedAmount(amount);
-                          setCustomAmount('');
-                        }}
-                        className={`p-2 rounded-lg border transition-all ${
-                          selectedAmount === amount
-                            ? 'bg-amber-600 text-white border-amber-600'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-amber-400'
-                        }`}
+                        onClick={() => { setSelectedAmount(amount); setCustomAmount(''); }}
+                        className={`p-2 rounded-lg border transition-all ${selectedAmount === amount ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-gray-700 border-gray-300 hover:border-amber-400'}`}
                       >
                         KES {amount.toLocaleString()}
                       </button>
@@ -311,19 +375,14 @@ export default function HeroSection() {
                   </div>
                 </div>
 
-                {/* Custom Amount */}
                 <input
                   type="number"
                   value={customAmount}
-                  onChange={(e) => {
-                    setCustomAmount(e.target.value);
-                    setSelectedAmount(null);
-                  }}
+                  onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }}
                   placeholder="Custom amount (KES)"
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:border-amber-400"
                 />
 
-                {/* Donate Button */}
                 <button
                   onClick={handleDonate}
                   disabled={!selectedAmount && !customAmount}
@@ -333,19 +392,12 @@ export default function HeroSection() {
                   Donate via M-Pesa
                 </button>
 
-                {/* Note */}
                 <div className="bg-amber-50 rounded-lg p-4 text-center">
-                  <p className="text-amber-700 text-xs">
-                    All donations support funeral expenses <br />
-                    and a scholarship fund in Vinny's memory.
-                  </p>
+                  <p className="text-amber-700 text-xs">All donations support funeral expenses and a scholarship fund in Vinny's memory.</p>
                 </div>
               </div>
 
-              <button
-                onClick={() => setShowDonateModal(false)}
-                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-              >
+              <button onClick={() => setShowDonateModal(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
                 <X className="w-4 h-4 text-gray-600" />
               </button>
             </motion.div>
@@ -353,9 +405,7 @@ export default function HeroSection() {
         )}
       </AnimatePresence>
 
-      {/* ============================================ */}
       {/* CONTACT DEVELOPER MODAL */}
-      {/* ============================================ */}
       <AnimatePresence>
         {showContactModal && (
           <motion.div
@@ -372,7 +422,6 @@ export default function HeroSection() {
               className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header */}
               <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-6 text-center text-white">
                 <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-amber-500/20 border-2 border-amber-400/50 flex items-center justify-center">
                   <Code className="w-8 h-8 text-amber-400" />
@@ -382,17 +431,12 @@ export default function HeroSection() {
               </div>
 
               <div className="p-6 space-y-5">
-                {/* Developer Message */}
                 <div className="bg-amber-50 rounded-xl p-4 text-center">
                   <Quote className="w-6 h-6 text-amber-400 mx-auto mb-2" />
-                  <p className="text-gray-600 text-sm italic">
-                    "Vinny was my close friend. His laughter, his kindness, his light — 
-                    they stay with me forever. This memorial is my love letter to him."
-                  </p>
+                  <p className="text-gray-600 text-sm italic">"Vinny was my close friend. His laughter, his kindness, his light — they stay with me forever. This memorial is my love letter to him."</p>
                   <p className="text-amber-600 text-xs mt-2 font-medium">— Isaac Karanu</p>
                 </div>
 
-                {/* Contact Info */}
                 <div>
                   <p className="text-gray-500 text-xs uppercase tracking-wide mb-3 flex items-center gap-2">
                     <User className="w-3 h-3" />
@@ -404,20 +448,12 @@ export default function HeroSection() {
                         <Phone className="w-4 h-4 text-gray-500" />
                         <span className="text-gray-700">{phoneNumber}</span>
                       </div>
-                      <button
-                        onClick={() => handleCopy(phoneNumber, 'phone')}
-                        className="p-1 hover:bg-gray-200 rounded transition-colors"
-                      >
+                      <button onClick={() => handleCopy(phoneNumber, 'phone')} className="p-1 hover:bg-gray-200 rounded transition-colors">
                         {copiedPhone ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-500" />}
                       </button>
                     </div>
 
-                    <a
-                      href={`https://wa.me/${phoneNumber.replace('0', '254')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between bg-green-50 rounded-lg p-3 border border-green-200 hover:bg-green-100 transition"
-                    >
+                    <a href={`https://wa.me/${phoneNumber.replace('0', '254')}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between bg-green-50 rounded-lg p-3 border border-green-200 hover:bg-green-100 transition">
                       <div className="flex items-center gap-3">
                         <MessageCircle className="w-4 h-4 text-green-600" />
                         <span className="text-gray-700">WhatsApp</span>
@@ -430,17 +466,13 @@ export default function HeroSection() {
                         <Mail className="w-4 h-4 text-gray-500" />
                         <span className="text-gray-700 text-sm">{email}</span>
                       </div>
-                      <button
-                        onClick={() => handleCopy(email, 'email')}
-                        className="p-1 hover:bg-gray-200 rounded transition-colors"
-                      >
+                      <button onClick={() => handleCopy(email, 'email')} className="p-1 hover:bg-gray-200 rounded transition-colors">
                         {copiedEmail ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-500" />}
                       </button>
                     </div>
                   </div>
                 </div>
 
-                {/* Services */}
                 <div>
                   <p className="text-gray-500 text-xs uppercase tracking-wide mb-3 flex items-center gap-2">
                     <Briefcase className="w-3 h-3" />
@@ -461,13 +493,7 @@ export default function HeroSection() {
                   </div>
                 </div>
 
-                {/* Find Us */}
-                <a
-                  href="https://bizwaziri-clean.vercel.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition"
-                >
+                <a href="https://bizwaziri-clean.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition">
                   <div className="flex items-center gap-3">
                     <ExternalLink className="w-4 h-4 text-amber-400" />
                     <span className="text-white text-sm">BizWaziri Digital</span>
@@ -475,18 +501,12 @@ export default function HeroSection() {
                   <span className="text-amber-400 text-xs">Visit →</span>
                 </a>
 
-                {/* Google Search */}
                 <div className="text-center pt-2">
-                  <p className="text-gray-400 text-[10px]">
-                    Find us on Google: <span className="text-amber-600">BizWaziri Digital</span>
-                  </p>
+                  <p className="text-gray-400 text-[10px]">Find us on Google: <span className="text-amber-600">BizWaziri Digital</span></p>
                 </div>
               </div>
 
-              <button
-                onClick={() => setShowContactModal(false)}
-                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
-              >
+              <button onClick={() => setShowContactModal(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
                 <X className="w-4 h-4 text-white" />
               </button>
             </motion.div>
@@ -494,31 +514,24 @@ export default function HeroSection() {
         )}
       </AnimatePresence>
 
-      {/* Accessibility Icon - Now links to contact */}
+      {/* Fixed bottom left contact button */}
       <button 
         onClick={() => setShowContactModal(true)}
         className="fixed bottom-6 left-6 z-50 w-10 h-10 bg-[#1a2a3a] rounded-full flex items-center justify-center shadow-lg hover:bg-[#2a3a4a] transition group"
         aria-label="Contact Developer"
       >
-        <svg className="w-5 h-5 text-white group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-        </svg>
+        <Code className="w-4 h-4 text-white" />
         <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
-          Contact Developer
+          Developer
         </span>
       </button>
 
       <style>{`
-        .duration-600 {
-          transition-duration: 600ms;
-        }
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(8px); }
-        }
-        .animate-bounce {
-          animation: bounce 1.5s infinite;
-        }
+        .duration-600 { transition-duration: 600ms; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+        .animate-bounce { animation: bounce 1.5s infinite; }
+        @keyframes bellRing { 0% { transform: rotate(0deg); } 10% { transform: rotate(15deg); } 20% { transform: rotate(-10deg); } 30% { transform: rotate(5deg); } 40% { transform: rotate(-5deg); } 50% { transform: rotate(0deg); } }
+        .bell-ring { animation: bellRing 1s ease-in-out; }
       `}</style>
     </>
   );
