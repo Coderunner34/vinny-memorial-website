@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // CORRECT PATHS - relative from src/app/components/ to src/imports/
 // Use direct paths instead of imports
-const vinnyPortrait = 'src/imports/vinportrait.jpeg';
+const vinnyPortrait = '/images/viiinyRIP.png';
 const treeImage = '/images/tree.png';
 // ============================================
 // TYPES
