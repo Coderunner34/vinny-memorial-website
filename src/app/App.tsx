@@ -7,7 +7,7 @@ import Biography from './components/Biography';
 import Timeline from './components/Timeline';
 import PhotoGallery from './components/PhotoGallery';
 import CandleWall from './components/CandleWall';
-import TributeWall from './components/TributeWall';
+
 import ServiceDetails from './components/ServiceDetails';
 import LiveStream from './components/LiveStream';
 import Farewell from './components/Farewell';
@@ -71,7 +71,7 @@ export default function App() {
             <Timeline />
             <PhotoGallery />
             <CandleWall />
-            <TributeWall />
+            
             <ServiceDetails />
             <LiveStream />
             

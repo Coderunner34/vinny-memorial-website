@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useInView } from 'motion/react';
 import { useRef, useState, useEffect } from 'react';
-import { Flame, Heart, Sparkles, Wind, Star, Users, Clock, Quote } from 'lucide-react';
+import { Flame, Heart, Sparkles, Wind, Star, Users, Clock, Quote, Image as ImageIcon } from 'lucide-react';
 
 interface Candle {
   id: number;
@@ -10,7 +10,21 @@ interface Candle {
   timestamp: Date;
   intensity?: number;
   flickerSpeed?: number;
+  imageSrc?: string; // New field for candle image
 }
+
+// Candle images from your imports/candlesImage folder
+const candleImages = [
+  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.08.jpeg',
+  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.09 (1).jpeg',
+  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.09.jpeg',
+  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.10 (1).jpeg',
+  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.10 (2).jpeg',
+  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.10.jpeg',
+  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.11 (1).jpeg',
+  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.11.jpeg',
+  '/src/imports/candlesImage/WhatsApp Image 2026-05-04 at 23.17.12.jpeg',
+];
 
 export default function CandleWall() {
   const ref = useRef(null);
@@ -23,7 +37,6 @@ export default function CandleWall() {
   const [ambientGlow, setAmbientGlow] = useState(0);
   const [selectedCandle, setSelectedCandle] = useState<Candle | null>(null);
   const [totalPrayers, setTotalPrayers] = useState(0);
-  const [showStats, setShowStats] = useState(false);
 
   // Load candles from localStorage
   useEffect(() => {
@@ -32,7 +45,7 @@ export default function CandleWall() {
       const parsed = JSON.parse(savedCandles);
       setCandles(parsed.map((c: any) => ({ ...c, timestamp: new Date(c.timestamp) })));
     } else {
-      // Sample candles
+      // Sample candles with random images from the candleImages array
       const sampleCandles: Candle[] = [
         { 
           id: 1, 
@@ -40,7 +53,8 @@ export default function CandleWall() {
           message: 'Forever in our hearts, our beloved Vinny. Your light guides us daily.', 
           timestamp: new Date(), 
           intensity: 0.9,
-          flickerSpeed: 1.2 
+          flickerSpeed: 1.2,
+          imageSrc: candleImages[0]
         },
         { 
           id: 2, 
@@ -48,7 +62,8 @@ export default function CandleWall() {
           message: 'Rest in peace, Commander. You led us with courage and love.', 
           timestamp: new Date(Date.now() - 86400000), 
           intensity: 0.85,
-          flickerSpeed: 1.0 
+          flickerSpeed: 1.0,
+          imageSrc: candleImages[1]
         },
         { 
           id: 3, 
@@ -56,7 +71,8 @@ export default function CandleWall() {
           message: 'A light in our fellowship. You are missed beyond words.', 
           timestamp: new Date(Date.now() - 172800000), 
           intensity: 0.95,
-          flickerSpeed: 1.4 
+          flickerSpeed: 1.4,
+          imageSrc: candleImages[2]
         },
       ];
       setCandles(sampleCandles);
@@ -84,6 +100,9 @@ export default function CandleWall() {
       setIsLighting(true);
       
       setTimeout(() => {
+        // Pick a random candle image for the new candle
+        const randomImage = candleImages[Math.floor(Math.random() * candleImages.length)];
+        
         const newCandle: Candle = {
           id: Date.now(),
           name: name.trim(),
@@ -91,6 +110,7 @@ export default function CandleWall() {
           timestamp: new Date(),
           intensity: 0.8 + Math.random() * 0.3,
           flickerSpeed: 0.8 + Math.random() * 0.8,
+          imageSrc: randomImage,
         };
         
         const updatedCandles = [newCandle, ...candles];
@@ -101,11 +121,6 @@ export default function CandleWall() {
         setMessage('');
         setShowForm(false);
         setIsLighting(false);
-        
-        // Play virtual lighting sound effect
-        const audio = new Audio('/candle-light.mp3');
-        audio.volume = 0.3;
-        audio.play().catch(() => {});
       }, 800);
     }
   };
@@ -144,7 +159,7 @@ export default function CandleWall() {
       className="relative py-16 px-4 md:py-24 md:px-6 overflow-hidden"
       style={{ backgroundColor: '#0a0a0a' }}
     >
-      {/* Dark gradient background with deep charcoal tones */}
+      {/* Dark gradient background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#111111] to-[#0a0a0a]" />
       
       {/* Ambient glow overlay */}
@@ -156,7 +171,7 @@ export default function CandleWall() {
         <div className="absolute inset-0 bg-gradient-radial from-amber-900/10 via-transparent to-transparent" />
       </motion.div>
       
-      {/* Floating particles - dust/embers */}
+      {/* Floating particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {particles.map((particle) => (
           <motion.div
@@ -183,7 +198,7 @@ export default function CandleWall() {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        {/* Header with stats toggle */}
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -217,7 +232,7 @@ export default function CandleWall() {
           </div>
           <div className="bg-amber-900/10 backdrop-blur-sm border border-amber-700/20 rounded-sm px-6 py-3 text-center min-w-[120px]">
             <div className="text-2xl md:text-3xl font-light text-amber-200">
-              {candles.filter(c => c.name.includes('Family')).length}
+              {candles.filter(c => c.name.includes('Family') || c.name.includes('family')).length}
             </div>
             <div className="text-amber-400/50 text-xs tracking-wide mt-1">FAMILY FLAMES</div>
           </div>
@@ -299,10 +314,10 @@ export default function CandleWall() {
           )}
         </motion.div>
 
-        {/* Candle Grid */}
+        {/* Candle Grid with Images */}
         <AnimatePresence>
           <motion.div
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -312,83 +327,76 @@ export default function CandleWall() {
                 key={candle.id}
                 initial={{ opacity: 0, scale: 0, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: Math.min(index * 0.03, 1) }}
-                whileHover={{ y: -4 }}
+                transition={{ duration: 0.4, delay: Math.min(index * 0.05, 1) }}
+                whileHover={{ y: -8, scale: 1.02 }}
                 className="group relative cursor-pointer"
                 onClick={() => setSelectedCandle(candle)}
               >
-                {/* Candle glow */}
+                {/* Glow effect behind candle */}
                 <motion.div
                   className="absolute inset-0 rounded-full blur-xl pointer-events-none"
-                  style={{
-                    background: 'radial-gradient(circle, rgba(255,100,0,0.3) 0%, rgba(255,100,0,0) 70%)',
+                  animate={{ 
+                    scale: [1, 1.1, 1],
+                    opacity: [0.2, 0.4, 0.2]
                   }}
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-                  transition={{ duration: candle.flickerSpeed || 1, repeat: Infinity }}
-                />
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <div className="w-full h-full bg-amber-500/20 rounded-full" />
+                </motion.div>
 
-                <div className="flex flex-col items-center">
-                  {/* Flame with realistic flicker */}
-                  <motion.div
-                    className="relative"
-                    animate={{
-                      scaleY: [1, 1.08, 0.96, 1.05, 1],
-                      scaleX: [1, 0.97, 1.04, 0.99, 1],
-                      y: [0, -1, 0.5, -0.5, 0],
-                    }}
-                    transition={{
-                      duration: 0.2 * (candle.flickerSpeed || 1),
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                  >
-                    <div className="w-8 h-10 relative">
-                      {/* Outer glow */}
-                      <motion.div
-                        className="absolute inset-0 blur-md bg-orange-500/30 rounded-full"
-                        animate={{ opacity: [0.3, 0.6, 0.3] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
+                {/* Candle Image Card */}
+                <div className="relative bg-gradient-to-b from-gray-800/50 to-gray-900/80 rounded-lg overflow-hidden backdrop-blur-sm border border-amber-700/30 transition-all duration-300 group-hover:border-amber-500/50">
+                  {/* Candle Image */}
+                  <div className="relative aspect-[3/4] overflow-hidden bg-gray-900">
+                    {candle.imageSrc ? (
+                      <img
+                        src={candle.imageSrc}
+                        alt={`Candle lit by ${candle.name}`}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
-                      
-                      {/* SVG Flame */}
-                      <svg width="32" height="40" viewBox="0 0 32 40" className="relative">
-                        <defs>
-                          <radialGradient id={`flame-grad-${candle.id}`} cx="50%" cy="30%" r="50%">
-                            <stop offset="0%" stopColor="#FFF5E0" />
-                            <stop offset="35%" stopColor="#FFD54F" />
-                            <stop offset="70%" stopColor="#FF9800" />
-                            <stop offset="100%" stopColor="#E65100" stopOpacity="0.8" />
-                          </radialGradient>
-                        </defs>
-                        <path
-                          d="M16 2 C12 10, 6 15, 6 22 C6 29, 10 34, 16 34 C22 34, 26 29, 26 22 C26 15, 20 10, 16 2 Z"
-                          fill={`url(#flame-grad-${candle.id})`}
-                          opacity={0.95}
-                        />
-                        <path
-                          d="M16 9 C13 15, 11 18, 11 22 C11 26, 13 29, 16 29 C19 29, 21 26, 21 22 C21 18, 19 15, 16 9 Z"
-                          fill="#FFF9E6"
-                          opacity={0.7}
-                        />
-                      </svg>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                        <Flame className="w-12 h-12 text-amber-500/30" />
+                      </div>
+                    )}
+                    
+                    {/* Gradient overlay for text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    
+                    {/* Flame flicker overlay animation */}
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
+                      animate={{
+                        background: [
+                          'radial-gradient(circle at 50% 30%, rgba(255,100,0,0) 0%, transparent 70%)',
+                          'radial-gradient(circle at 50% 30%, rgba(255,100,0,0.15) 0%, transparent 70%)',
+                          'radial-gradient(circle at 50% 30%, rgba(255,100,0,0) 0%, transparent 70%)',
+                        ]
+                      }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    />
+                    
+                    {/* Name on image */}
+                    <div className="absolute bottom-0 left-0 right-0 p-3">
+                      <p className="text-amber-100 text-sm font-serif text-center truncate">
+                        {candle.name}
+                      </p>
+                      <p className="text-amber-400/50 text-[10px] text-center mt-1">
+                        {formatDate(candle.timestamp)}
+                      </p>
                     </div>
-                  </motion.div>
-
-                  {/* Candle body */}
-                  <div className="relative mt-1">
-                    <div className="w-4 h-14 bg-gradient-to-b from-amber-200 via-amber-300 to-amber-400 rounded-sm shadow-lg" />
-                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-5 h-1 bg-amber-100 rounded-full opacity-30" />
                   </div>
-
-                  {/* Small indicator dot for presence */}
-                  <div className="mt-2 w-1 h-1 rounded-full bg-amber-500/30 animate-pulse" />
+                  
+                  {/* Small candle body indicator at bottom */}
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-3 bg-gradient-to-b from-amber-300 to-amber-600 rounded-sm shadow-lg" />
                 </div>
 
-                {/* Hover info - minimal */}
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                  <span className="text-amber-400/60 text-xs">
-                    {candle.name.split(' ')[0]}
-                  </span>
+                {/* Tooltip on hover */}
+                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20 whitespace-nowrap">
+                  <div className="bg-gray-900/95 backdrop-blur-sm border border-amber-500/30 rounded-lg px-3 py-1.5 shadow-xl">
+                    <p className="text-amber-200 text-xs font-medium">{candle.name}</p>
+                    <p className="text-amber-400/60 text-[10px]">{candle.message.substring(0, 40)}...</p>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -402,8 +410,8 @@ export default function CandleWall() {
             animate={{ opacity: 1 }}
             className="text-center py-16"
           >
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-              <Flame className="w-8 h-8 text-gray-600" />
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-800/50 border border-amber-700/30 flex items-center justify-center">
+              <Flame className="w-10 h-10 text-amber-500/30" />
             </div>
             <p className="text-gray-500 text-sm">No candles lit yet. Be the first to light one.</p>
           </motion.div>
@@ -426,8 +434,12 @@ export default function CandleWall() {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="mt-16 pt-8 text-center border-t border-gray-800"
         >
-          <Quote className="w-4 h-4 text-gray-700 mx-auto mb-3" />
-          <p className="text-gray-600 text-xs max-w-md mx-auto">
+          <div className="flex justify-center gap-1 text-amber-700/30 mb-3">
+            <Star className="w-3 h-3" />
+            <Star className="w-3 h-3" />
+            <Star className="w-3 h-3" />
+          </div>
+          <p className="text-gray-600 text-xs max-w-md mx-auto italic">
             "The light of one candle can never be extinguished by darkness."
           </p>
         </motion.div>
@@ -440,38 +452,39 @@ export default function CandleWall() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
             onClick={() => setSelectedCandle(null)}
           >
             <motion.div
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-gray-900 max-w-md w-full border border-amber-700/30 rounded-sm shadow-2xl"
+              className="bg-gray-900 max-w-md w-full border border-amber-700/30 rounded-sm shadow-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Flame animation in modal */}
-              <div className="p-6 text-center border-b border-gray-800">
-                <motion.div
-                  animate={{ scaleY: [1, 1.1, 0.95, 1.05, 1] }}
-                  transition={{ duration: 0.2, repeat: Infinity }}
-                  className="inline-block"
-                >
-                  <div className="w-12 h-14 relative mx-auto">
-                    <svg width="48" height="56" viewBox="0 0 48 56">
-                      <path
-                        d="M24 4 C18 14, 10 20, 10 30 C10 39, 15 46, 24 46 C33 46, 38 39, 38 30 C38 20, 30 14, 24 4 Z"
-                        fill="#FF9800"
-                        opacity="0.9"
-                      />
-                      <path
-                        d="M24 14 C20 22, 16 26, 16 30 C16 35, 19 39, 24 39 C29 39, 32 35, 32 30 C32 26, 28 22, 24 14 Z"
-                        fill="#FFF9E6"
-                      />
+              {/* Candle image in modal */}
+              {selectedCandle.imageSrc && (
+                <div className="relative h-64 overflow-hidden">
+                  <img
+                    src={selectedCandle.imageSrc}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                  
+                  {/* Animated flame overlay */}
+                  <motion.div
+                    className="absolute top-1/3 left-1/2 transform -translate-x-1/2 w-16 h-20"
+                    animate={{ scaleY: [1, 1.08, 0.96, 1.05] }}
+                    transition={{ duration: 0.25, repeat: Infinity }}
+                  >
+                    <svg viewBox="0 0 32 40" className="w-full h-full drop-shadow-2xl">
+                      <path d="M16 2 C12 10, 6 15, 6 22 C6 29, 10 34, 16 34 C22 34, 26 29, 26 22 C26 15, 20 10, 16 2 Z" fill="#FF9800" opacity="0.9" />
+                      <path d="M16 9 C13 15, 11 18, 11 22 C11 26, 13 29, 16 29 C19 29, 21 26, 21 22 C21 18, 19 15, 16 9 Z" fill="#FFF9E6" opacity="0.8" />
                     </svg>
-                  </div>
-                </motion.div>
-              </div>
+                  </motion.div>
+                </div>
+              )}
               
               <div className="p-6">
                 <h3 className="text-xl font-serif text-amber-100 text-center mb-1">
@@ -505,13 +518,6 @@ export default function CandleWall() {
       </AnimatePresence>
 
       <style>{`
-        @keyframes gentleFlicker {
-          0%, 100% { transform: scale(1); opacity: 0.6; }
-          50% { transform: scale(1.15); opacity: 0.9; }
-        }
-        .animate-flicker {
-          animation: gentleFlicker 2s ease-in-out infinite;
-        }
         .bg-gradient-radial {
           background: radial-gradient(ellipse at center, var(--tw-gradient-stops));
         }

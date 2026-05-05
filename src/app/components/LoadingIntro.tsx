@@ -13,6 +13,34 @@ interface LoadingIntroProps {
 }
 
 // ============================================
+// PIANO MUSIC FOR INTRO (River Flows in You)
+// ============================================
+// ============================================
+// PIANO MUSIC FOR INTRO (River Flows in You)
+// ============================================
+function IntroPianoMusic() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.25;
+      audioRef.current.play().catch(e => {
+        console.log('Audio autoplay prevented. User interaction needed.');
+      });
+    }
+  }, []);
+
+  return (
+    <audio
+      ref={audioRef}
+      src="/music/river-flows-in-you.mp3"
+      loop
+      autoPlay
+    />
+  );
+}
+
+// ============================================
 // STARFIELD WITH SUBTLE SHOOTING STARS
 // ============================================
 function StarfieldCanvas({ active }: { active: boolean }) {
@@ -295,10 +323,18 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
   const [revealProgress, setRevealProgress] = useState(0);
   const [showEnterButton, setShowEnterButton] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [showPiano, setShowPiano] = useState(true);
 
   const phrases = ['He ran.', 'He laughed.', 'He was here.'];
   const PORTRAIT_REVEAL_DURATION = 6800;
 
+  // Start piano
+  useEffect(() => {
+    const timer = setTimeout(() => setShowPiano(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Portrait reveal progress
   useEffect(() => {
     const startTime = performance.now();
     let frameId: number;
@@ -312,6 +348,7 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
     return () => cancelAnimationFrame(frameId);
   }, []);
 
+  // Handle phrase completion
   const handlePhraseWriteComplete = useCallback(
     (index: number) => {
       if (index < phrases.length - 1) {
@@ -332,6 +369,7 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
     [phrases.length]
   );
 
+  // Show enter button after dark phase settles
   useEffect(() => {
     if (phase === 2) {
       const timer = setTimeout(() => setShowEnterButton(true), 3000);
@@ -340,6 +378,7 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
   }, [phase]);
 
   const handleEnter = useCallback(() => {
+    setShowPiano(false); // Stop piano when exiting
     setIsExiting(true);
     setTimeout(onEnter, 2500);
   }, [onEnter]);
@@ -347,219 +386,224 @@ export default function LoadingIntro({ onEnter }: LoadingIntroProps) {
   const bgColor = phase === 0 ? '#FAFAF8' : phase === 1 ? '#0F0F0F' : '#020408';
 
   return (
-    <motion.div
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
-      className="fixed inset-0 z-50 overflow-hidden"
-      style={{
-        backgroundColor: bgColor,
-        transition: 'background-color 1.4s cubic-bezier(0.22, 0.61, 0.36, 1)',
-      }}
-    >
-      <StarfieldCanvas active={phase >= 1} />
+    <>
+      {/* PIANO MUSIC - only during intro */}
+      {showPiano && <IntroPianoMusic />}
+      
+      <motion.div
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.8 }}
+        className="fixed inset-0 z-50 overflow-hidden"
+        style={{
+          backgroundColor: bgColor,
+          transition: 'background-color 1.4s cubic-bezier(0.22, 0.61, 0.36, 1)',
+        }}
+      >
+        <StarfieldCanvas active={phase >= 1} />
 
-      {/* TREE BACKGROUND - dark phase only */}
-      <AnimatePresence>
-        {phase === 2 && (
-          <motion.div
-            className="fixed inset-0 z-[1] pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.8 }}
-          >
-            <img
-              src={treeImage}
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover"
-              style={{ opacity: 0.55 }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background: 'linear-gradient(90deg, rgba(2,4,8,0.75) 0%, rgba(2,4,8,0.3) 35%, transparent 65%)',
-                backdropFilter: 'blur(4px)',
-              }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background: 'radial-gradient(ellipse 55% 40% at 78% 88%, transparent 30%, rgba(2,4,8,0.55) 100%)',
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ========== WHITE PHASE ========== */}
-      <AnimatePresence>
-        {phase === 0 && (
-          <motion.div
-            className="fixed inset-0 z-10 flex flex-col items-center justify-center"
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.9 }}
-          >
-            <div className="mb-10">
-              <DeepSpacePortrait revealProgress={revealProgress} />
-            </div>
-            <div className="relative" style={{ height: 90, width: '100%', maxWidth: 700 }}>
-              {previousPhraseIndex !== null && (
-                <Phrase
-                  key={`prev-${previousPhraseIndex}`}
-                  text={phrases[previousPhraseIndex]}
-                  isCurrent={false}
-                />
-              )}
-              {!phraseSequenceComplete && (
-                <Phrase
-                  key={`curr-${currentPhraseIndex}`}
-                  text={phrases[currentPhraseIndex]}
-                  isCurrent={true}
-                  onWriteComplete={() => handlePhraseWriteComplete(currentPhraseIndex)}
-                />
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ========== DARK PHASE ========== */}
-      <AnimatePresence>
-        {phase === 2 && (
-          <motion.div
-            className="fixed inset-0 z-10 flex flex-col justify-center px-8 md:px-16"
-            style={{ alignItems: 'flex-start' }}
-            initial={{ opacity: 0 }}
-            animate={isExiting ? { opacity: 0, filter: 'blur(8px)', y: -20 } : { opacity: 1, filter: 'blur(0px)', y: 0 }}
-            transition={isExiting ? { duration: 1.2 } : { duration: 1.5 }}
-          >
+        {/* TREE BACKGROUND - dark phase only */}
+        <AnimatePresence>
+          {phase === 2 && (
             <motion.div
-              className="mb-4"
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <div
-                className="rounded-full overflow-hidden border border-[#D4AF6A]/40 shadow-lg"
-                style={{ width: 72, height: 72 }}
-              >
-                <img
-                  src={vinnyPortrait}
-                  alt="Vincent"
-                  className="w-full h-full object-cover object-center"
-                />
-              </div>
-            </motion.div>
-
-            <motion.h1
-              className="font-serif text-[#F5EDD8] leading-tight mb-3 text-left"
-              style={{ fontSize: 'clamp(1.6rem, 4.5vw, 3.8rem)', fontWeight: 300, maxWidth: '70%' }}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1.1, delay: 0.55 }}
-            >
-              Vincent Mwaura Wairimu
-            </motion.h1>
-
-            <motion.p
-              className="text-[#D4AF6A] font-light tracking-[0.28em] mb-5 text-left"
-              style={{ fontSize: 'clamp(0.8rem, 1.6vw, 1rem)' }}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.9, delay: 0.95 }}
-            >
-              2005 — 2026
-            </motion.p>
-
-            <motion.div
-              className="mb-5"
-              style={{ width: 80, height: 1, background: 'rgba(212,175,106,0.4)' }}
-              initial={{ scaleX: 0, transformOrigin: 'left' }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.9, delay: 1.2 }}
-            />
-
-            <motion.p
-              className="text-[#C4B89A] italic text-left leading-relaxed mb-10 max-w-md"
-              style={{ fontSize: 'clamp(0.78rem, 1.5vw, 0.92rem)' }}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1.3, delay: 1.45 }}
-            >
-              "He ran. He laughed. He was here.<br/>
-              Forever remembered, forever loved."
-            </motion.p>
-
-            {showEnterButton && (
-              <motion.button
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                whileHover={{
-                  scale: 1.04,
-                  boxShadow: '0 0 50px rgba(212, 175, 106, 0.45)',
-                  borderColor: '#D4AF6A',
-                }}
-                whileTap={{ scale: 0.97 }}
-                onClick={handleEnter}
-                className="px-8 py-2.5 bg-transparent border border-[#D4AF6A]/40 text-[#E8C97A] rounded-full text-sm tracking-[0.22em] uppercase font-light backdrop-blur-sm transition-all duration-300"
-              >
-                Enter Memorial →
-              </motion.button>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Candle */}
-      <AnimatePresence>
-        {phase === 2 && (
-          <div className="fixed bottom-8 right-8 z-15">
-            <MemorialCandle />
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Skip button */}
-      {phase === 0 && !isExiting && (
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.25 }}
-          whileHover={{ opacity: 0.7 }}
-          onClick={handleEnter}
-          className="fixed bottom-6 right-6 z-40 text-[#888480] text-xs tracking-[0.18em] uppercase hover:text-[#D4AF6A] transition-colors"
-        >
-          Skip →
-        </motion.button>
-      )}
-
-      {/* Exit animation */}
-      <AnimatePresence>
-        {isExiting && (
-          <>
-            <motion.div
-              className="fixed inset-0 z-40 pointer-events-none"
+              className="fixed inset-0 z-[1] pointer-events-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1.2 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.8 }}
             >
-              <div className="absolute inset-0 bg-black" />
+              <img
+                src={treeImage}
+                alt=""
+                aria-hidden="true"
+                className="w-full h-full object-cover"
+                style={{ opacity: 0.55 }}
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: 'linear-gradient(90deg, rgba(2,4,8,0.75) 0%, rgba(2,4,8,0.3) 35%, transparent 65%)',
+                  backdropFilter: 'blur(4px)',
+                }}
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: 'radial-gradient(ellipse 55% 40% at 78% 88%, transparent 30%, rgba(2,4,8,0.55) 100%)',
+                }}
+              />
             </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ========== WHITE PHASE ========== */}
+        <AnimatePresence>
+          {phase === 0 && (
             <motion.div
-              className="fixed inset-0 z-40 pointer-events-none"
-              initial={{ backdropFilter: 'blur(0px)' }}
-              animate={{ backdropFilter: 'blur(12px)' }}
-              transition={{ duration: 1.5 }}
-            />
+              className="fixed inset-0 z-10 flex flex-col items-center justify-center"
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.9 }}
+            >
+              <div className="mb-10">
+                <DeepSpacePortrait revealProgress={revealProgress} />
+              </div>
+              <div className="relative" style={{ height: 90, width: '100%', maxWidth: 700 }}>
+                {previousPhraseIndex !== null && (
+                  <Phrase
+                    key={`prev-${previousPhraseIndex}`}
+                    text={phrases[previousPhraseIndex]}
+                    isCurrent={false}
+                  />
+                )}
+                {!phraseSequenceComplete && (
+                  <Phrase
+                    key={`curr-${currentPhraseIndex}`}
+                    text={phrases[currentPhraseIndex]}
+                    isCurrent={true}
+                    onWriteComplete={() => handlePhraseWriteComplete(currentPhraseIndex)}
+                  />
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ========== DARK PHASE ========== */}
+        <AnimatePresence>
+          {phase === 2 && (
             <motion.div
-              className="fixed inset-0 z-50 pointer-events-none bg-white"
+              className="fixed inset-0 z-10 flex flex-col justify-center px-8 md:px-16"
+              style={{ alignItems: 'flex-start' }}
               initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0, 0.95, 0] }}
-              transition={{ duration: 2.2, times: [0, 0.6, 0.85, 1] }}
-            />
-          </>
+              animate={isExiting ? { opacity: 0, filter: 'blur(8px)', y: -20 } : { opacity: 1, filter: 'blur(0px)', y: 0 }}
+              transition={isExiting ? { duration: 1.2 } : { duration: 1.5 }}
+            >
+              <motion.div
+                className="mb-4"
+                initial={{ opacity: 0, x: -40 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                <div
+                  className="rounded-full overflow-hidden border border-[#D4AF6A]/40 shadow-lg"
+                  style={{ width: 72, height: 72 }}
+                >
+                  <img
+                    src={vinnyPortrait}
+                    alt="Vincent"
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
+              </motion.div>
+
+              <motion.h1
+                className="font-serif text-[#F5EDD8] leading-tight mb-3 text-left"
+                style={{ fontSize: 'clamp(1.6rem, 4.5vw, 3.8rem)', fontWeight: 300, maxWidth: '70%' }}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1.1, delay: 0.55 }}
+              >
+                Vincent Mwaura Wairimu
+              </motion.h1>
+
+              <motion.p
+                className="text-[#D4AF6A] font-light tracking-[0.28em] mb-5 text-left"
+                style={{ fontSize: 'clamp(0.8rem, 1.6vw, 1rem)' }}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.9, delay: 0.95 }}
+              >
+                2005 — 2026
+              </motion.p>
+
+              <motion.div
+                className="mb-5"
+                style={{ width: 80, height: 1, background: 'rgba(212,175,106,0.4)' }}
+                initial={{ scaleX: 0, transformOrigin: 'left' }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.9, delay: 1.2 }}
+              />
+
+              <motion.p
+                className="text-[#C4B89A] italic text-left leading-relaxed mb-10 max-w-md"
+                style={{ fontSize: 'clamp(0.78rem, 1.5vw, 0.92rem)' }}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1.3, delay: 1.45 }}
+              >
+                "He ran. He laughed. He was here.<br/>
+                Forever remembered, forever loved."
+              </motion.p>
+
+              {showEnterButton && (
+                <motion.button
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  whileHover={{
+                    scale: 1.04,
+                    boxShadow: '0 0 50px rgba(212, 175, 106, 0.45)',
+                    borderColor: '#D4AF6A',
+                  }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleEnter}
+                  className="px-8 py-2.5 bg-transparent border border-[#D4AF6A]/40 text-[#E8C97A] rounded-full text-sm tracking-[0.22em] uppercase font-light backdrop-blur-sm transition-all duration-300"
+                >
+                  Enter Memorial →
+                </motion.button>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Candle */}
+        <AnimatePresence>
+          {phase === 2 && (
+            <div className="fixed bottom-8 right-8 z-15">
+              <MemorialCandle />
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Skip button */}
+        {phase === 0 && !isExiting && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.25 }}
+            whileHover={{ opacity: 0.7 }}
+            onClick={handleEnter}
+            className="fixed bottom-6 right-6 z-40 text-[#888480] text-xs tracking-[0.18em] uppercase hover:text-[#D4AF6A] transition-colors"
+          >
+            Skip →
+          </motion.button>
         )}
-      </AnimatePresence>
-    </motion.div>
+
+        {/* Exit animation */}
+        <AnimatePresence>
+          {isExiting && (
+            <>
+              <motion.div
+                className="fixed inset-0 z-40 pointer-events-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1.2 }}
+              >
+                <div className="absolute inset-0 bg-black" />
+              </motion.div>
+              <motion.div
+                className="fixed inset-0 z-40 pointer-events-none"
+                initial={{ backdropFilter: 'blur(0px)' }}
+                animate={{ backdropFilter: 'blur(12px)' }}
+                transition={{ duration: 1.5 }}
+              />
+              <motion.div
+                className="fixed inset-0 z-50 pointer-events-none bg-white"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 0, 0.95, 0] }}
+                transition={{ duration: 2.2, times: [0, 0.6, 0.85, 1] }}
+              />
+            </>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </>
   );
 }

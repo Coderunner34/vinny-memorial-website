@@ -29,15 +29,15 @@ const content = {
       },
       childhood: {
         title: "The Boy Who Helped",
-        text: "In childhood, Vinny used to assist his grandmother with different house chores. He was a very hardworking, committed, and obedient boy at home. He helped without being asked — he swept, he cleaned, he walked alongside his family with a quiet strength that belied his years."
+        text: "In childhood, Vinny used to assist his grandmother with different house chores. He was a very hardworking, committed, and obedient boy at home. He helped without being asked he swept, he cleaned, he walked alongside his family with a quiet strength that belied his years."
       },
       education: {
         title: "A Scholar and a Leader",
-        text: "Vinny joined St. Joseph The Worker Primary School, Ting'ang'a in 2010. Later, he transferred to Karia-ini Academy, Ndumberi, completing his KCPE in 2019 with distinction. In 2020, accompanied by his aunt Lucy Wandai and his beloved grandmother, he joined Njurii High School in Chuka. There he became Scouts Commander and an active, dedicated member of the Red Cross. In 2023, he sat for his KCSE and passed well. He later joined Mount Kenya University, Thika Main Campus, pursuing his dreams until his passing."
+        text: "Vinny joined St. Joseph The Worker Primary School, Ting'ang'a in 2010. Later, he transferred to Karia-ini Academy, Ndumberi, completing his KCPE in 2018 with distinction. In 2019, accompanied by his aunt Lucy Wandai and his beloved grandmother, he joined Njurii High School in Chuka. There he became Scouts Commander and an active, dedicated member of the Red Cross. In 2022, he sat for his KCSE and passed well. He later joined Mount Kenya University, Thika Main Campus, pursuing his dreams until his passing."
       },
       faith: {
         title: "A Man of Faith",
-        text: "Having been brought up by a family that loves God, Vinny was baptized at P.C.E.A. Ayub Kinyua, Eldoret, by Rev. Geoffrey Mwihanda on September 23, 2007. He later joined P.C.E.A. Gituamba Church, Ting'ang'a, where he was confirmed in 2018 by Rev. Titus Kibaara. His faith was not mere attendance — it was the quiet engine of his life."
+        text: "Having been brought up by a family that loves God, Vinny was baptized at P.C.E.A. Ayub Kinyua, Eldoret, by Rev. Geoffrey Mwihanda on September 23, 2007. He later joined P.C.E.A. Gituamba Church, Ting'ang'a, where he was confirmed in 2018 by Rev. Titus Kibaara. His faith was not mere attendance it was the quiet engine of his life."
       },
       passing: {
         title: "Called Home",

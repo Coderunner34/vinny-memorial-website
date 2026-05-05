@@ -3,7 +3,7 @@ import { useInView } from 'motion/react';
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from 'lucide-react';
 
-// All photos of Vinny - using all available images
+// ALL YOUR WORKING IMAGES - using the correct paths from your imports folder
 const photos = [
   {
     id: 1,
@@ -12,13 +12,13 @@ const photos = [
   },
   {
     id: 2,
-    src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.13_(1).jpeg',
-    caption: 'The smile that lit every room ',
+    src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.12.jpeg',
+    caption: 'The whole family - united in love',
   },
   {
     id: 3,
-    src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.15_(1).jpeg',
-    caption: 'With his beloved cucu - precious memories',
+    src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.13_(1).jpeg',
+    caption: 'The smile that lit every room',
   },
   {
     id: 4,
@@ -28,27 +28,108 @@ const photos = [
   {
     id: 5,
     src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.14_(2).jpeg',
-    caption: 'Young Vinny - full of life and joy',
+    caption: 'Happy moments in Eldoret',
   },
   {
     id: 6,
-    src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.30.jpeg',
-    caption: 'Church family at P.C.E.A. Gituamba',
+    src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.15_(1).jpeg',
+    caption: 'With his beloved cucu - precious memories',
+  },
+  // {
+  //   id: 7,
+  //   src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.07.jpeg',
+  //   caption: 'Vinny in his element - radiant smile',
+  // },
+  // {
+  //   id: 8,
+  //   src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.09.jpeg',
+  //   caption: 'Cherished family moment',
+  // },
+  // {
+  //   id: 9,
+  //   src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.11.jpeg',
+  //   caption: 'Young Vinny - full of life and joy',
+  // },
+  {
+    id: 10,
+    src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.12_(1).jpeg',
+    caption: 'Celebrating with loved ones',
   },
   {
-    id: 7,
+    id: 11,
+    src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.13.jpeg',
+    caption: 'A moment of happiness',
+  },
+  {
+    id: 12,
+    src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.14.jpeg',
+    caption: 'Family time - pure joy',
+  },
+  {
+    id: 13,
+    src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.16.jpeg',
+    caption: 'The beautiful soul we will always remember',
+  },
+  // {
+  //   id: 14,
+  //   src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.21.jpeg',
+  //   caption: 'Surrounded by love',
+  // },
+  {
+    id: 15,
+    src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.22.jpeg',
+    caption: 'Vinny ',
+  },
+  {
+    id: 16,
+    src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.28.jpeg',
+    caption: 'Creating beautiful memories in catering',
+  },
+  // {
+  //   id: 17,
+  //   src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.29_(2).jpeg',
+  //   caption: 'Celebrating life together',
+  // },
+  {
+    id: 18,
+    src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.30.jpeg',
+    caption: 'With family at Njurii High school ',
+  },
+  // {
+  //   id: 19,
+  //   src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.31.jpeg',
+  //   caption: 'A special moment captured in time',
+  // },
+  {
+    id: 20,
     src: '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.31_(1).jpeg',
     caption: 'Celebrating life with loved ones',
   },
+  // {
+  //   id: 21,
+  //   src: '/src/imports/WhatsApp_Image_2026-05-04_at_01.48.42.jpeg',
+  //   caption: 'A memory to treasure forever',
+  // },
   {
-    id: 8,
-    src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.12.jpeg',
-    caption: 'The whole family - united in love',
+    id: 22,
+    src: '/src/imports/WhatsApp Image 2026-05-02 at 18.01.14 (1).jpeg',
+    caption: 'Vinny with his brother - unbreakable bond',
   },
   {
-    id: 9,
-    src: '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.14_(2).jpeg',
-    caption: 'Happy moments in Eldoret',
+    id: 23,
+    src: '/src/imports/vinn&shoshschl.jpeg',
+    caption: 'Vinny and his beloved grandmother',
+  },
+  {
+    id: 24,
+    src: '/src/imports/fstdayincampus.jpeg',
+    caption: 'First day at Mount Kenya University',
+  },
+  
+  {
+    id: 25,
+    src: '/src/imports/tree.png',
+    caption: 'A peaceful memory',
   },
 ];
 
@@ -86,7 +167,6 @@ function Lightbox({
     setIsZoomed(false);
   }, [photos.length]);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -97,7 +177,6 @@ function Lightbox({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [goToPrevious, goToNext, onClose]);
 
-  // Touch navigation
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.touches[0].clientX);
   };
@@ -107,11 +186,8 @@ function Lightbox({
     const touchEnd = e.changedTouches[0].clientX;
     const diff = touchStart - touchEnd;
     if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        goToNext();
-      } else {
-        goToPrevious();
-      }
+      if (diff > 0) goToNext();
+      else goToPrevious();
     }
     setTouchStart(null);
   };
@@ -126,7 +202,6 @@ function Lightbox({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Close button */}
       <button
         onClick={onClose}
         className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
@@ -134,7 +209,6 @@ function Lightbox({
         <X className="w-5 h-5 text-white" />
       </button>
 
-      {/* Zoom button */}
       <button
         onClick={() => setIsZoomed(!isZoomed)}
         className="absolute top-4 right-16 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
@@ -142,34 +216,24 @@ function Lightbox({
         {isZoomed ? <ZoomOut className="w-5 h-5 text-white" /> : <ZoomIn className="w-5 h-5 text-white" />}
       </button>
 
-      {/* Image counter */}
       <div className="absolute top-4 left-4 z-10 px-3 py-1 rounded-full bg-black/50 text-white text-sm">
         {currentIndex + 1} / {photos.length}
       </div>
 
-      {/* Previous button - desktop only */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          goToPrevious();
-        }}
+        onClick={(e) => { e.stopPropagation(); goToPrevious(); }}
         className="absolute left-4 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors hidden md:flex"
       >
         <ChevronLeft className="w-6 h-6 text-white" />
       </button>
 
-      {/* Next button - desktop only */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          goToNext();
-        }}
+        onClick={(e) => { e.stopPropagation(); goToNext(); }}
         className="absolute right-4 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors hidden md:flex"
       >
         <ChevronRight className="w-6 h-6 text-white" />
       </button>
 
-      {/* Main image */}
       <motion.div
         key={currentIndex}
         initial={{ opacity: 0, scale: 0.95 }}
@@ -181,45 +245,26 @@ function Lightbox({
         <img
           src={currentPhoto.src}
           alt={currentPhoto.caption}
-          className={`object-contain w-full h-full transition-transform duration-300 ${
-            isZoomed ? 'cursor-zoom-out scale-150' : 'cursor-zoom-in'
-          }`}
+          className={`object-contain w-full h-full transition-transform duration-300 ${isZoomed ? 'cursor-zoom-out scale-150' : 'cursor-zoom-in'}`}
           style={{ maxHeight: '85vh', maxWidth: '90vw' }}
         />
-        
-        {/* Caption */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 md:p-6">
-          <p className="text-white/90 text-center text-sm md:text-base">
-            {currentPhoto.caption}
-          </p>
+          <p className="text-white/90 text-center text-sm md:text-base">{currentPhoto.caption}</p>
         </div>
       </motion.div>
 
-      {/* Thumbnail strip - desktop only */}
       <div className="absolute bottom-6 left-0 right-0 hidden md:flex justify-center gap-2 overflow-x-auto px-4">
         {photos.map((photo, idx) => (
           <button
             key={photo.id}
-            onClick={(e) => {
-              e.stopPropagation();
-              setCurrentIndex(idx);
-            }}
-            className={`w-16 h-16 rounded overflow-hidden transition-all duration-200 ${
-              idx === currentIndex
-                ? 'ring-2 ring-white scale-110'
-                : 'opacity-50 hover:opacity-100'
-            }`}
+            onClick={(e) => { e.stopPropagation(); setCurrentIndex(idx); }}
+            className={`w-16 h-16 rounded overflow-hidden transition-all duration-200 ${idx === currentIndex ? 'ring-2 ring-white scale-110' : 'opacity-50 hover:opacity-100'}`}
           >
-            <img
-              src={photo.src}
-              alt=""
-              className="w-full h-full object-cover"
-            />
+            <img src={photo.src} alt="" className="w-full h-full object-cover" />
           </button>
         ))}
       </div>
 
-      {/* Swipe hint for mobile */}
       <div className="absolute bottom-24 left-0 right-0 text-center md:hidden">
         <p className="text-white/40 text-xs">← Swipe to navigate →</p>
       </div>
@@ -228,46 +273,50 @@ function Lightbox({
 }
 
 // ============================================
-// MAIN PHOTO GALLERY COMPONENT
+// POLAROID SCRAPBOOK GALLERY
 // ============================================
 export default function PhotoGallery() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
-  const [columns, setColumns] = useState(3);
 
-  // Responsive columns based on screen size
-  useEffect(() => {
-    const updateColumns = () => {
-      const width = window.innerWidth;
-      if (width < 640) setColumns(1);
-      else if (width < 1024) setColumns(2);
-      else setColumns(3);
-    };
-    updateColumns();
-    window.addEventListener('resize', updateColumns);
-    return () => window.removeEventListener('resize', updateColumns);
-  }, []);
+  // Generate random rotations for each photo (stored once, not changing on rerender)
+  const [rotations] = useState(() => 
+    photos.map(() => (Math.random() - 0.5) * 6) // -3deg to +3deg
+  );
+  
+  const [yOffsets] = useState(() => 
+    photos.map(() => (Math.random() - 0.5) * 8) // -4px to +4px
+  );
 
-  // Calculate masonry layout
-  const getColumnedPhotos = () => {
-    const columns_array: typeof photos[] = Array.from({ length: columns }, () => []);
-    photos.forEach((photo, index) => {
-      columns_array[index % columns].push(photo);
+  // Split photos into 3 columns for masonr y layout
+  const getColumns = () => {
+    const cols: Photo[][] = [[], [], []];
+    photos.forEach((photo, idx) => {
+      cols[idx % 3].push(photo);
     });
-    return columns_array;
+    return cols;
   };
 
-  const columnedPhotos = getColumnedPhotos();
+  const columns = getColumns();
 
   return (
     <section
       ref={ref}
       id="gallery"
       className="relative py-16 px-4 md:py-24 md:px-6"
-      style={{ backgroundColor: '#FAFAF8' }}
+      style={{ backgroundColor: '#F5F0E8' }}
     >
-      <div className="max-w-7xl mx-auto">
+      {/* Vintage paper background texture */}
+      <div 
+        className="absolute inset-0 opacity-20 pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+        }}
+      />
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -275,57 +324,68 @@ export default function PhotoGallery() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12 md:mb-16"
         >
-          <div className="w-12 h-px bg-gray-300 mx-auto mb-6" />
-          <h2 className="text-3xl md:text-5xl font-serif text-gray-800 tracking-wide mb-3">
-            Memories in Pictures
+          <div className="w-12 h-px bg-amber-400/50 mx-auto mb-6" />
+          <h2 className="text-3xl md:text-5xl font-serif text-gray-700 tracking-wide mb-3" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            Scattered Memories
           </h2>
-          <div className="w-16 h-px bg-gray-300 mx-auto mt-6" />
-          <p className="text-gray-400 mt-6 max-w-md mx-auto text-sm tracking-wide">
-            A glimpse into moments that defined a beautiful life
+          <div className="w-16 h-px bg-amber-400/50 mx-auto mt-6" />
+          <p className="text-gray-400 mt-6 max-w-md mx-auto text-sm tracking-wide italic">
+            Just like photos spread across a table — slightly messy, deeply real
           </p>
         </motion.div>
 
-        {/* Masonry Grid */}
-        <div className="flex gap-3 md:gap-4">
-          {columnedPhotos.map((column, colIndex) => (
+        {/* Polaroid Grid */}
+        <div className="flex flex-wrap md:flex-nowrap gap-4 md:gap-6 justify-center">
+          {columns.map((column, colIdx) => (
             <motion.div
-              key={colIndex}
-              className="flex-1 flex flex-col gap-3 md:gap-4"
+              key={colIdx}
+              className="flex-1 flex flex-col gap-6 md:gap-8"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: colIndex * 0.1 }}
+              transition={{ duration: 0.5, delay: colIdx * 0.1 }}
             >
               {column.map((photo, idx) => {
-                // Calculate random height for masonry effect
-                const heights = [320, 380, 350, 420, 300, 360, 340, 400, 370];
-                const height = heights[(photo.id - 1) % heights.length];
+                const globalIndex = photos.findIndex(p => p.id === photo.id);
+                const rotation = rotations[globalIndex];
+                const yOffset = yOffsets[globalIndex];
                 
                 return (
                   <motion.div
                     key={photo.id}
-                    className="relative group cursor-pointer overflow-hidden rounded-sm bg-gray-100"
-                    style={{ height: `${height}px` }}
-                    whileHover={{ y: -4 }}
-                    transition={{ duration: 0.2 }}
-                    onClick={() => setSelectedPhotoIndex(photos.findIndex(p => p.id === photo.id))}
+                    className="group cursor-pointer"
+                    style={{ 
+                      transform: `rotate(${rotation}deg) translateY(${yOffset}px)`,
+                      transition: 'transform 0.3s ease'
+                    }}
+                    whileHover={{ 
+                      rotate: 0, 
+                      scale: 1.02,
+                      y: -8,
+                      zIndex: 50,
+                      transition: { duration: 0.2 }
+                    }}
+                    onClick={() => setSelectedPhotoIndex(globalIndex)}
                   >
-                    <img
-                      src={photo.src}
-                      alt={photo.caption}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    
-                    {/* Overlay on hover */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <div className="text-white text-center p-4">
-                        <p className="text-sm font-light tracking-wide">{photo.caption}</p>
+                    {/* Polaroid Card */}
+                    <div className="bg-white rounded-sm shadow-md overflow-hidden" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                      {/* Photo Container */}
+                      <div className="relative overflow-hidden bg-gray-100" style={{ padding: '8px 8px 0 8px' }}>
+                        <img
+                          src={photo.src}
+                          alt={photo.caption}
+                          className="w-full aspect-square object-cover hover:scale-105 transition duration-500"
+                          loading="lazy"
+                        />
                       </div>
-                    </div>
-                    
-                    {/* Light indicator on hover */}
-                    <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="absolute inset-0 shadow-inner" />
+                      
+                      {/* Polaroid Bottom (for handwritten caption area) */}
+                      <div className="p-3 bg-white text-center">
+                        <p className="text-gray-500 text-xs font-light italic tracking-wide" style={{ fontFamily: "'Caveat', 'Courier New', cursive" }}>
+                          {photo.caption.length > 40 ? photo.caption.substring(0, 37) + '...' : photo.caption}
+                        </p>
+                        {/* Tiny decorative line like real Polaroids */}
+                        <div className="w-8 h-px bg-gray-200 mx-auto mt-2" />
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -339,9 +399,9 @@ export default function PhotoGallery() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-center text-gray-400 text-sm mt-12"
+          className="text-center text-gray-400 text-sm mt-12 italic"
         >
-          Click on any photo to view full gallery
+          {photos.length} moments scattered in time · click any photo to remember
         </motion.p>
       </div>
 

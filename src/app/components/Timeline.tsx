@@ -36,6 +36,8 @@ const milestoneImages = [
   '/src/imports/WhatsApp_Image_2026-05-02_at_18.01.15_(1).jpeg',
   '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.30.jpeg',
   '/src/imports/WhatsApp_Image_2026-05-03_at_21.34.31_(1).jpeg',
+   '/src/imports/fstdayincampus.jpeg',
+   '/src/imports/viiinyRIP.png',
 ];
 
 const milestones: Milestone[] = [
@@ -80,7 +82,7 @@ const milestones: Milestone[] = [
   },
   {
     year: '2019-2022',
-    title: 'Ting\'ang\'a Secondary School',
+    title: 'Njurii High School in Chuka ',
     description: 'Scouts Commander, Red Cross member, beloved friend',
     longDescription: 'As Scouts Commander, Vinny led with courage. As a Red Cross member, he learned to heal. His peers loved him.',
     icon: Award,
@@ -112,8 +114,8 @@ const milestones: Milestone[] = [
     longDescription: 'At 21, Vinny\'s journey on earth ended. He is now the warmth in the sun, the whisper in the wind, the star that shines a little brighter.',
     icon: Cross,
     color: '#9B8EC1',
-    image: milestoneImages[1],
-    quote: 'I have fought the good fight — 2 Timothy 4:7',
+    image: '/src/imports/viiinyRIP.png',
+     quote: 'I have fought the good fight, I have finished the race, I have kept the faith. — 2 Timothy 4:7',
     final: true,
   },
 ];

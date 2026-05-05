@@ -14,7 +14,7 @@ export default function ServiceDetails() {
   const y = useTransform(scrollYProgress, [0, 1], [0, 50]);
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
-  const burialDate = new Date('2026-05-06T10:00:00');
+const burialDate = new Date(); // today
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -153,7 +153,7 @@ export default function ServiceDetails() {
                 <span className="text-gray-500 text-sm tracking-wide">DATE</span>
               </div>
               <p className="text-gray-800 text-lg md:text-xl font-serif">
-                Tuesday, May 6th, 2026
+                Tuesday, May 5th, 2026
               </p>
             </div>
           </div>

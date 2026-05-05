@@ -371,7 +371,13 @@ export default function LiveStream() {
             className="mt-6 text-center"
           >
             <p className="text-gray-400 text-xs">
-              Click the title "Live Stream" 5 times to access admin controls
+              The family will update this section with the live stream link on the day of the service.
+            </p>
+           <p className="text-gray-400 text-xs mt-2">
+              If you have the stream link, please contact the family to have it added.
+            </p>
+           <p className="text-gray-400 text-xs mt-2">
+              Thank you for your understanding.
             </p>
           </motion.div>
         )}
